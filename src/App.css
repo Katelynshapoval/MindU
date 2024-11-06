@@ -1,0 +1,184 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial-Rounded-Light, sans-serif;
+}
+
+@font-face {
+  font-family: Arial-Rounded;
+  src: url("fonts/Arial-Rounded.ttf");
+}
+
+@font-face {
+  font-family: Arial-Rounded-Light;
+  src: url("fonts/Arial-Rounded-Light.ttf");
+}
+
+.home,
+.chat,
+.tips,
+.support {
+  display: flex;
+  height: 90vh;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Navbar CSS */
+.navbar {
+  background-color: #1a1a19;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-bars {
+  margin-left: 2rem;
+  font-size: 2rem;
+  background: none;
+  color: #000;
+}
+
+.nav-menu {
+  background-color: #88ab8e;
+  width: 250px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  transition: 850ms;
+}
+
+.nav-menu.active {
+  left: 0;
+  transition: 450ms;
+}
+
+.nav-text {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 8px 0px 8px 16px;
+  list-style: none;
+  height: 60px;
+}
+
+.nav-text a {
+  text-decoration: none;
+  color: #151414;
+  font-size: 18px;
+  width: 95%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 4px;
+}
+
+.nav-text a:hover {
+  background-color: #000000;
+  color: #fff;
+}
+
+.nav-menu-items {
+  width: 100%;
+}
+
+.navbar-toggle {
+  background-color: #88ab8e;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#logoSidebar {
+  height: 25px;
+}
+
+#crossSidebar {
+  padding-top: 7px;
+  margin-right: 10px;
+}
+
+span {
+  margin-left: 16px;
+}
+
+.logOut {
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 20px;
+  cursor: pointer;
+  position: relative;
+  padding: 5px;
+}
+
+/* Undeline animation */
+
+.logOut::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #ffffff;
+  transition: transform 0.25s ease-out;
+}
+
+.logOut:hover::after {
+  transform: scaleX(1);
+}
+
+.logOut.left::after {
+  transform-origin: bottom right;
+}
+
+.logOut.left:hover::after {
+  transform-origin: bottom left;
+}
+
+.logOut.center::after {
+  transform-origin: bottom center;
+}
+
+.logOut.center:hover::after {
+  transform-origin: bottom center;
+}
+
+.logOut.right::after {
+  transform-origin: bottom left;
+}
+
+.logOut.right:hover::after {
+  transform-origin: bottom right;
+}
+
+/* Sign in button */
+
+.account {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.account button {
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 5px;
+}

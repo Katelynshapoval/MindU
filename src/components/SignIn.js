@@ -4,7 +4,6 @@ import { FcGoogle } from "react-icons/fc";
 const SignIn = () => {
   const logGoogleUser = async () => {
     const response = await signInWithGooglePopup();
-    console.log(response);
   };
   return (
     <div className="account">

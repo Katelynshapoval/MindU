@@ -1,0 +1,70 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial-Rounded-Light, sans-serif;
+}
+
+/* Define custom fonts for the application */
+@font-face {
+  font-family: Arial-Rounded;
+  src: url("../fonts/Arial-Rounded.ttf");
+}
+
+@font-face {
+  font-family: Arial-Rounded-Light;
+  src: url("../fonts/Arial-Rounded-Light.ttf");
+}
+
+body {
+  overflow: hidden;
+}
+
+/* Chat container styling */
+.chat {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 40px;
+  padding-top: 30px;
+  align-items: center;
+  height: 90vh;
+  flex-direction: column;
+}
+
+.inputContainer {
+  position: relative;
+  width: 694px;
+  padding: 5px;
+}
+
+.inputContainer input {
+  width: 100%;
+  padding: 10px 25px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: white;
+  background-color: black;
+  height: 52px;
+  border-radius: 30px;
+  line-height: 24px;
+}
+
+/* Position and style the submit button (icon) */
+.inputContainer #submit {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 30px;
+  color: #ffffff;
+}
+
+/* Hover effect for the submit button */
+.inputContainer #submit:hover {
+  color: rgba(255, 255, 255, 0.788);
+}

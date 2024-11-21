@@ -1,0 +1,7 @@
+{
+  "Values": {
+    "OPENAI_API_KEY": "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",
+    "FUNCTIONS_WORKER_RUNTIME": "node"
+  },
+  "IsEncrypted": false
+}

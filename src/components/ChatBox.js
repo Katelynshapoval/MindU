@@ -58,8 +58,7 @@ const ChatBox = () => {
         ))}
         <div ref={scroll}></div>
       </div>
-      <SendMessage scroll={scroll} />{" "}
-      {/* SendMessage component for new messages */}
+      <SendMessage scroll={scroll} /> {/* component for new messages */}
     </main>
   );
 };

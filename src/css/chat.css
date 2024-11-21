@@ -1,3 +1,4 @@
+/* Global Styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,7 +6,7 @@
   font-family: Arial-Rounded-Light, sans-serif;
 }
 
-/* Define custom fonts for the application */
+/* Custom Fonts */
 @font-face {
   font-family: Arial-Rounded;
   src: url("../fonts/Arial-Rounded.ttf");
@@ -20,18 +21,17 @@ body {
   overflow: hidden;
 }
 
-/* Chat container styling */
+/* Chat Container */
 .chat {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  padding-bottom: 40px;
-  padding-top: 30px;
   align-items: center;
   height: 90vh;
-  flex-direction: column;
-  /* background-color: rgb(156, 156, 233); */
+  padding: 30px 0 40px;
 }
 
+/* Input Container */
 .inputContainer {
   position: relative;
   width: 694px;
@@ -40,32 +40,30 @@ body {
 
 .inputContainer input {
   width: 100%;
+  height: 52px;
   padding: 10px 25px;
-  border: none;
-  outline: none;
   font-size: 16px;
   color: white;
   background-color: black;
-  height: 52px;
+  border: none;
   border-radius: 30px;
-  line-height: 24px;
+  outline: none;
 }
 
 /* Position and style the submit button (icon) */
 .inputContainer #submit {
   position: absolute;
-  right: 30px;
   top: 50%;
+  right: 30px;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   font-size: 30px;
   color: #ffffff;
-  background-color: transparent;
+  background: transparent;
   border: none;
-  outline: none;
+  cursor: pointer;
 }
 
 /* Hover effect for the submit button */
@@ -74,20 +72,17 @@ body {
 }
 
 /* Chat */
-/* chat component */
-
 .chat-box {
   display: flex;
   flex-direction: column;
   height: 95%;
   justify-content: space-around;
-  /* margin-bottom: 60px; */
 }
 
 .messages-wrapper {
-  padding: 30px;
-  margin-top: 40px;
   height: 80%;
+  margin-top: 40px;
+  padding: 30px;
   overflow-y: scroll; /* Enables vertical scrolling */
 }
 
@@ -102,78 +97,50 @@ body {
   scrollbar-width: none; /* For Firefox */
 }
 
+/* Chat Bubbles */
 .chat-bubble {
-  border-radius: 20px 20px 20px 0;
-  padding: 15px;
-  background-color: #7cc5d9;
-  color: #1c2c4c;
-  width: max-content;
-  max-width: calc(100% - 50px);
-  box-shadow: -2px 2px 1px 1px #4c768d;
   display: flex;
   align-items: flex-start;
+  max-width: calc(100% - 50px);
+  width: max-content;
+  padding: 15px;
   margin-bottom: 20px;
+  border-radius: 20px 20px 20px 0;
+  background-color: #d0e7d2;
+  color: #1c2c4c;
+  box-shadow: -2px 2px 1px 1px #88ab8e;
 }
+
 .chat-bubble.right {
   margin-left: auto;
   border-radius: 20px 20px 0 20px;
   background-color: #fff;
-  box-shadow: -2px 2px 1px 1px #88dded;
 }
+
 .chat-bubble__left {
   width: 35px;
   height: 35px;
-  border-radius: 50%;
   margin-right: 10px;
+  border-radius: 50%;
 }
+
 .user-name {
-  font-weight: bold;
   margin-bottom: 5px;
   font-size: 0.9rem;
+  font-weight: bold;
   color: #1c2c4c;
 }
+
 .user-message {
   word-break: break-all;
 }
+
 .message-time {
-  display: block;
   text-align: right;
 }
 
-/* send message */
+/* Send Message */
 .send-message {
-  /* position: fixed;
-  bottom: 0px;
-  width: 100%;
-  padding: 20px 30px;
-  background-color: #4c768d; */
   display: flex;
   margin-bottom: 20px;
-}
-.send-message > input {
-  height: 40px;
-  padding: 10px 10px;
-  border-radius: 5px 0 0 5px;
-  border: none;
-  flex-grow: 1;
-  background-color: white;
-  color: #1c2c4c;
-  font-size: 1rem;
-}
-.send-message > input:placeholder {
-  color: #ddd;
-}
-.send-message > :is(input, button):focus {
-  outline: none;
-  border-bottom: 1px solid #7cc5d9;
-}
-.send-message > button {
-  width: 70px;
-  height: 40px;
-  padding: 5px 10px;
-  border-radius: 0 5px 5px 0;
-  color: #242443;
-  border: 1px solid #7cc5d9;
-  background-color: #7cc5d9;
-  font-weight: 600;
 }

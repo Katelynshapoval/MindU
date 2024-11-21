@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { auth, db } from "../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { FaCircleArrowUp } from "react-icons/fa6";
+import { Timestamp } from "firebase/firestore";
 
 const SendMessage = ({ scroll }) => {
   const [message, setMessage] = useState(""); // State to store the message
@@ -16,19 +17,26 @@ const SendMessage = ({ scroll }) => {
     }
     // Get current user's details from Firebase Authentication
     const { uid, displayName, photoURL } = auth.currentUser;
+    // Use a local timestamp for immediate sorting
+    const localTimestamp = Timestamp.now();
     // Add the message to Firestore
     await addDoc(collection(db, "messages"), {
       text: message,
       name: displayName,
-      avatar: photoURL,
-      createdAt: serverTimestamp(), // Timestamp for when the message was sent
+      // avatar: photoURL,
+      createdAt: localTimestamp, // Temporary local timestamp
+      // createdAt: serverTimestamp(), // Timestamp for when the message was sent
       uid, // User ID
     });
     setMessage(""); // Clear the input field
     scroll.current.scrollIntoView({ behavior: "smooth" }); // Scroll to latest message
   };
   return (
-    <form onSubmit={(event) => sendMessage(event)} className="send-message">
+    <form
+      onSubmit={(event) => sendMessage(event)}
+      autocomplete="off"
+      className="send-message"
+    >
       <div className="inputContainer">
         <input
           id="userInput"

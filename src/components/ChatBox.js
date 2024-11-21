@@ -18,7 +18,7 @@ const ChatBox = () => {
   useEffect(() => {
     const q = query(
       collection(db, "messages"),
-      orderBy("createdAt", "desc"),
+      orderBy("createdAt", "asc"),
       limit(50)
     );
 
@@ -29,15 +29,11 @@ const ChatBox = () => {
         // Push each document data to fetchedMessages array
         fetchedMessages.push({ ...doc.data(), id: doc.id });
       });
-      // Sort messages by createdAt to display them in correct order
-      const sortedMessages = fetchedMessages.sort(
-        (a, b) => a.createdAt - b.createdAt
-      );
-      setMessages(sortedMessages); // Update state with sorted messages
+      setMessages(fetchedMessages); // Update state with sorted messages
     });
 
     // Cleanup listener on component unmount
-    return () => unsubscribe;
+    return () => unsubscribe();
   }, []); // Empty dependency array means this runs once when component mounts
 
   // Effect to scroll to the bottom when messages update

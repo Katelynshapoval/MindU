@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
-// Import Link component for navigation between routes
 import { Link } from "react-router-dom";
-// Import SidebarData array for sidebar menu items
 import { SidebarData } from "./SidebarData";
 import "../App.css";
 import { IconContext } from "react-icons/lib";
@@ -12,29 +10,47 @@ import { getAuth, signOut } from "firebase/auth";
 import SignIn from "../components/SignIn";
 
 function Navbar({ user }) {
-  // State to track sidebar visibility, default is hidden (false)
   const [sidebar, setSidebar] = useState(false);
-  // Toggle function to show or hide the sidebar
+  const sidebarRef = useRef(null); // Reference for sidebar
+
   const showSidebar = () => setSidebar(!sidebar);
   const auth = getAuth();
-  // Logout function
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
       console.log("User signed out successfully");
-      // You could also add redirect logic here if needed
     } catch (error) {
       console.error("Error signing out: ", error);
     }
   };
+
+  useEffect(() => {
+    // Function to handle clicks outside the sidebar
+    const handleClickOutside = (event) => {
+      if (
+        sidebarRef.current && // Ensure sidebar ref is initialized
+        !sidebarRef.current.contains(event.target) && // Check if the click is outside the sidebar
+        !event.target.closest(".menu-bars") // Exclude clicks on the menu icon
+      ) {
+        setSidebar(false); // Close the sidebar
+      }
+    };
+
+    // Attach event listener to document
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
-      {/* Provide a default color for all icons using IconContext */}
       <IconContext.Provider value={{ color: "undefined" }}>
-        {/* Top navbar section */}
         <div className="navbar">
           <Link to="#" className="menu-bars">
-            {/* Menu icon for opening the sidebar */}
             <FaIcons.FaBars color="white" onClick={showSidebar} />
           </Link>
           {user ? (
@@ -47,17 +63,17 @@ function Navbar({ user }) {
           )}
         </div>
 
-        {/* Sidebar navigation menu */}
-        <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
+        <nav
+          className={sidebar ? "nav-menu active" : "nav-menu"}
+          ref={sidebarRef} // Attach ref to sidebar
+        >
           <ul className="nav-menu-items" onClick={showSidebar}>
-            {/* Close icon at the top of the sidebar */}
             <li className="navbar-toggle">
               <Link to="#" className="menu-bars">
                 <AiIcons.AiOutlineClose id="crossSidebar" />
               </Link>
-              <img id="logoSidebar" src="./images/logo.png" />
+              <img id="logoSidebar" src="./images/logo.png" alt="Logo" />
             </li>
-            {/* Map through SidebarData to create menu items */}
             {SidebarData.map((item, index) => {
               return (
                 <li key={index} className={item.cName}>

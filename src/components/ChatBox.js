@@ -12,6 +12,7 @@ import SendMessage from "./SendMessage";
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]); // State to hold the list of messages
+  const [editMessageData, setEditMessageData] = useState(null); // State for the message being edited
   const scroll = useRef(); // Reference to scroll to the bottom of the chat
 
   // Query to fetch messages ordered by creation time, limiting to 50
@@ -43,6 +44,11 @@ const ChatBox = () => {
     }
   }, [messages]); // Depend on messages state
 
+  // Function to handle message editing
+  const handleEditMessage = (message) => {
+    setEditMessageData(message); // Set message data to be edited
+  };
+
   return (
     <main className="chat-box">
       <div
@@ -50,11 +56,20 @@ const ChatBox = () => {
         style={{ overflowY: "auto", height: "80vh" }}
       >
         {messages?.map((message) => (
-          <Message key={message.id} message={message} />
+          <Message
+            key={message.id}
+            message={message}
+            onEdit={handleEditMessage}
+          />
         ))}
         <div ref={scroll}></div>
       </div>
-      <SendMessage scroll={scroll} /> {/* component for new messages */}
+      <SendMessage
+        scroll={scroll}
+        editMessageData={editMessageData} // Pass the edit data to SendMessage
+        setEditMessageData={setEditMessageData} // Pass the setter to reset after editing
+      />{" "}
+      {/* SendMessage with edit functionality */}
     </main>
   );
 };

@@ -25,16 +25,15 @@ const Message = ({ message, onEdit }) => {
 
   return (
     <div className={`chat-bubble ${isUserMessage ? "right" : ""}`}>
+      {isUserMessage && (
+        <div className="message-actions">
+          <button onClick={editMessage}>Edit</button>
+          <button onClick={deleteMessage}>Delete</button>
+        </div>
+      )}
       <div className="chat-bubble__right">
         <p className="user-name">{message.name}</p>
         <p className="user-message">{message.text}</p>
-
-        {isUserMessage && (
-          <div className="message-actions">
-            <button onClick={editMessage}>Edit</button>
-            <button onClick={deleteMessage}>Delete</button>
-          </div>
-        )}
       </div>
     </div>
   );

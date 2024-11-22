@@ -144,3 +144,79 @@ body {
   display: flex;
   margin-bottom: 20px;
 }
+
+.message-actions {
+  position: relative;
+  left: -70px;
+}
+.message-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* changes */
+/* Chat Bubble Container */
+.chat-bubble-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  width: 100%;
+  position: relative; /* This is needed to position the actions relative to the container */
+}
+
+/* Message Bubble Styling */
+.chat-bubble {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border-radius: 20px;
+  background-color: #d0e7d2;
+  color: #1c2c4c;
+  box-shadow: -2px 2px 1px 1px #88ab8e;
+  word-wrap: break-word;
+  max-width: 100%; /* Ensure the bubble can resize based on message length */
+  position: relative; /* Allows positioning of the actions outside this bubble */
+}
+
+/* Right-aligned Messages */
+.chat-bubble.right {
+  margin-left: auto;
+  background-color: #fff;
+  border-radius: 20px 20px 0 20px;
+}
+
+/* Message Actions (Buttons) */
+.message-actions {
+  position: absolute;
+  left: -70px; /* Adjust to position the buttons to the left of the message */
+  top: 10px; /* Adjust this as needed to align with the message */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1; /* Ensure the buttons are above other elements */
+}
+
+.message-actions button {
+  background: transparent;
+  border: none;
+  color: #1c2c4c;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.message-actions button:hover {
+  color: #888;
+}
+
+/* Username and Message */
+.user-name {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.user-message {
+  word-break: break-word;
+}

@@ -1,0 +1,123 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+}
+.assistant {
+  background-color: #343541;
+  display: flex;
+  color: white;
+  height: 90vh;
+}
+.side-bar-assistant {
+  background-color: #202123;
+  /* height: 90vh; */
+  height: 100%;
+  width: 244px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.main {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+}
+
+#newChat {
+  border: solid 0.5px rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+}
+/* nav {
+  border-top: solid 0.5px rgba(255, 255, 255, 0.5);
+  padding: 10px;
+  margin: 10px;
+} */
+
+.history {
+  padding: 10px;
+  margin: 10px;
+  height: 100%;
+}
+.history li {
+  list-style-type: none;
+  padding: 15px 0;
+  cursor: pointer;
+}
+.bottom-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#submit {
+  position: absolute;
+  bottom: 15px;
+  right: 0;
+  cursor: pointer;
+}
+
+.feed {
+  /* overflow: scroll; */
+  width: 100%;
+  padding: 0;
+  height: 80%;
+  margin-top: 40px;
+  padding: 30px;
+  overflow-y: scroll;
+}
+.feed li {
+  display: flex;
+  background-color: #444654;
+  width: 100%;
+  padding: 20px;
+  margin: 20px 0;
+}
+.feed p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  text-align: left;
+}
+.feed p.role {
+  min-width: 100px;
+}
+
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  height: 95%;
+  justify-content: space-around;
+}
+
+.messages-wrapper {
+  height: 80%;
+  margin-top: 40px;
+  padding: 30px;
+  overflow-y: scroll; /* Enables vertical scrolling */
+}
+
+/* Hide the scrollbar but keep the scrolling functionality */
+.feed::-webkit-scrollbar {
+  width: 0; /* Removes the scrollbar */
+  height: 0;
+}
+
+.feed {
+  -ms-overflow-style: none; /* For Internet Explorer 10+ */
+  scrollbar-width: none; /* For Firefox */
+}

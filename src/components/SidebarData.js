@@ -2,6 +2,7 @@ import React from "react";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import * as IoIcons from "react-icons/io";
+import { VscRobot } from "react-icons/vsc";
 
 export const SidebarData = [
   {
@@ -26,6 +27,12 @@ export const SidebarData = [
     title: "Support",
     path: "/support",
     icon: <IoIcons.IoMdHelpCircle />,
+    cName: "nav-text",
+  },
+  {
+    title: "Assistant",
+    path: "/assistant",
+    icon: <VscRobot />,
     cName: "nav-text",
   },
 ];

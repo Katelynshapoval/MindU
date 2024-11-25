@@ -6,6 +6,7 @@ import Tips from "./Routes/Tips";
 import Home from "./Routes/Home";
 import Chat from "./Routes/Chat";
 import Support from "./Routes/Support";
+import Assistant from "./Routes/Assistant";
 import App from "./App"; // Import App.js here
 
 // Define the router configuration
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "support",
         element: <Support />,
+      },
+      {
+        path: "assistant",
+        element: <Assistant />,
       },
     ],
   },

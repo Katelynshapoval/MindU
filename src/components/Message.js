@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { auth, db } from "../firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { CiEdit } from "react-icons/ci";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const Message = ({ message, onEdit }) => {
   const [user] = useAuthState(auth); // Get current authenticated user
@@ -27,8 +29,12 @@ const Message = ({ message, onEdit }) => {
     <div className={`chat-bubble ${isUserMessage ? "right" : ""}`}>
       {isUserMessage && (
         <div className="message-actions">
-          <button onClick={editMessage}>Edit</button>
-          <button onClick={deleteMessage}>Delete</button>
+          <button onClick={editMessage}>
+            <CiEdit />
+          </button>
+          <button onClick={deleteMessage}>
+            <RiDeleteBin6Line />
+          </button>
         </div>
       )}
       <div className="chat-bubble__right">

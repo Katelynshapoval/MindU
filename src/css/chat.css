@@ -190,8 +190,8 @@ body {
 /* Message Actions (Buttons) */
 .message-actions {
   position: absolute;
-  left: -70px; /* Adjust to position the buttons to the left of the message */
-  top: 10px; /* Adjust this as needed to align with the message */
+  left: -28px; /* Adjust to position the buttons to the left of the message */
+  top: 18px; /* Adjust this as needed to align with the message */
   display: flex;
   flex-direction: column;
   align-items: center;

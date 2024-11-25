@@ -9,6 +9,7 @@ function Assistant() {
   const [currentTitle, setCurrentTitle] = useState(null);
   const [chatInputs, setChatInputs] = useState({});
   const scrollToEnd = useRef(null); // Reference to scroll to the bottom of the chat feed
+  const sendMessageInputRef = useRef(null); // for autofocus
 
   const createNewChat = () => {
     setMessage(null);
@@ -88,7 +89,10 @@ function Assistant() {
       scrollToEnd.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [previousChats]); // Depend on previousChats state to trigger scrolling when a new message is added
-
+  // Autofocus on input
+  useEffect(() => {
+    sendMessageInputRef.current.focus();
+  }, []);
   const currentChat = previousChats.filter(
     (previousChat) => previousChat.title === currentTitle
   );
@@ -132,6 +136,7 @@ function Assistant() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") getMessages(); // Allow submitting on Enter
               }}
+              ref={sendMessageInputRef}
             />
             <div id="submit" onClick={getMessages}>
               <FaCircleArrowUp />

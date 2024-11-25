@@ -21,6 +21,10 @@ const SendMessage = ({ scroll, editMessageData, setEditMessageData }) => {
       inputRef.current?.focus(); // Focus on the input field after editing
     }
   }, [editMessageData]); // Only run when editMessageData changes
+  // Autofocus on input
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   // Function to handle sending or updating the message
   const sendMessage = async (event) => {
@@ -68,7 +72,7 @@ const SendMessage = ({ scroll, editMessageData, setEditMessageData }) => {
           placeholder="Enter your message"
           value={message}
           onChange={(e) => setMessage(e.target.value)} // Update message state on change
-          ref={inputRef} // Attach the ref to the input field
+          ref={inputRef} // Attach the ref to the input field + autofocus
         />
         <button type="submit" id="submit">
           <FaCircleArrowUp /> {/* Send icon */}

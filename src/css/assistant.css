@@ -8,7 +8,7 @@ body {
   overflow: hidden;
 }
 .assistant {
-  background-color: #343541;
+  background-color: #d0e7d2;
   display: flex;
   color: white;
   height: 90vh;
@@ -41,12 +41,18 @@ body {
   border-radius: 5px;
   padding: 10px;
   margin: 10px;
+  transition: background-color 150ms linear;
 }
 /* nav {
   border-top: solid 0.5px rgba(255, 255, 255, 0.5);
   padding: 10px;
   margin: 10px;
 } */
+
+#newChat:hover {
+  background-color: white;
+  color: black;
+}
 
 .history {
   padding: 10px;
@@ -57,7 +63,13 @@ body {
   list-style-type: none;
   padding: 15px 0;
   cursor: pointer;
+  transition: color 200ms linear;
 }
+
+.history li:hover {
+  color: #88ab8e;
+}
+
 .bottom-section {
   width: 100%;
   display: flex;
@@ -83,13 +95,13 @@ body {
 }
 .feed li {
   display: flex;
-  background-color: #444654;
+  background-color: #88ab8e;
   width: 100%;
   padding: 20px;
   margin: 20px 0;
 }
 .feed p {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(0, 0, 0, 0.8);
   font-size: 14px;
   text-align: left;
 }

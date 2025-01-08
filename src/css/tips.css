@@ -1,0 +1,51 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial-Rounded-Light, sans-serif;
+}
+
+body {
+  overflow: hidden;
+}
+
+/* Custom Fonts */
+@font-face {
+  font-family: Arial-Rounded;
+  src: url("../fonts/Arial-Rounded.ttf");
+}
+
+@font-face {
+  font-family: Arial-Rounded-Light;
+  src: url("../fonts/Arial-Rounded-Light.ttf");
+}
+
+/* Tips Container */
+.tips {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 90vh;
+  padding: 30px 0 40px;
+}
+
+.tipCardContainer {
+  height: 90%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+.tipCard {
+  height: 350px;
+  width: 250px;
+  padding: 24px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  text-align: center;
+}
+
+.tipCard h2 {
+  margin-bottom: 10px;
+}

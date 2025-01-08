@@ -116,7 +116,7 @@ function Assistant() {
         </ul>
       </section>
       <section className="main">
-        {!currentTitle && <h1>Help</h1>}
+        {!currentTitle && <h1 style={{ color: "#000000" }}>Welcome!</h1>}
         <ul className="feed">
           {currentChat?.map((chatMessage, index) => (
             <li key={index}>
@@ -131,6 +131,7 @@ function Assistant() {
             <input
               id="userInput"
               placeholder="Enter your prompt"
+              autoComplete="off"
               value={value} // Bind the value of input to the state
               onChange={(e) => setValue(e.target.value)} // Update state on change
               onKeyDown={(e) => {

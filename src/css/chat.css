@@ -6,6 +6,10 @@
   font-family: Arial-Rounded-Light, sans-serif;
 }
 
+body {
+  overflow: hidden;
+}
+
 /* Custom Fonts */
 @font-face {
   font-family: Arial-Rounded;
@@ -17,10 +21,6 @@
   src: url("../fonts/Arial-Rounded-Light.ttf");
 }
 
-body {
-  overflow: hidden;
-}
-
 /* Chat Container */
 .chat {
   display: flex;
@@ -29,6 +29,91 @@ body {
   align-items: center;
   height: 90vh;
   padding: 30px 0 40px;
+}
+
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  height: 95%;
+  justify-content: space-around;
+}
+
+.messages-wrapper {
+  height: 80%;
+  margin-top: 40px;
+  padding: 30px;
+  overflow-y: scroll; /* Enables vertical scrolling */
+}
+
+.messages-wrapper::-webkit-scrollbar {
+  width: 0; /* Removes the scrollbar */
+  height: 0;
+}
+
+.messages-wrapper {
+  -ms-overflow-style: none; /* For Internet Explorer 10+ */
+  scrollbar-width: none; /* For Firefox */
+}
+
+/* Chat Bubbles */
+.chat-bubble {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border-radius: 20px;
+  background-color: #d0e7d2;
+  color: #1c2c4c;
+  box-shadow: -2px 2px 1px 1px #88ab8e;
+  word-wrap: break-word;
+  max-width: 100%; /* Ensure the bubble can resize based on message length */
+  position: relative; /* Allows positioning of the actions outside this bubble */
+  max-width: 400px;
+  text-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.chat-bubble.right {
+  margin-left: auto;
+  background-color: #fff;
+  border-radius: 20px 20px 0 20px;
+}
+
+/* Chat Bubble Container */
+.chat-bubble-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  width: 100%;
+  position: relative; /* This is needed to position the actions relative to the container */
+}
+
+/* Chat Bubble Contents */
+.chat-bubble__left {
+  width: 35px;
+  height: 35px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.user-name {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.user-message {
+  word-break: break-word;
+}
+
+.message-time {
+  text-align: right;
+}
+
+/* Send Message */
+.send-message {
+  display: flex;
+  margin-bottom: 20px;
 }
 
 /* Input Container */
@@ -50,7 +135,7 @@ body {
   outline: none;
 }
 
-/* Position and style the submit button (icon) */
+/* Submit Button */
 .inputContainer #submit {
   position: absolute;
   top: 50%;
@@ -66,125 +151,8 @@ body {
   cursor: pointer;
 }
 
-/* Hover effect for the submit button */
 .inputContainer #submit:hover {
   color: rgba(255, 255, 255, 0.788);
-}
-
-/* Chat */
-.chat-box {
-  display: flex;
-  flex-direction: column;
-  height: 95%;
-  justify-content: space-around;
-}
-
-.messages-wrapper {
-  height: 80%;
-  margin-top: 40px;
-  padding: 30px;
-  overflow-y: scroll; /* Enables vertical scrolling */
-}
-
-/* Hide the scrollbar but keep the scrolling functionality */
-.messages-wrapper::-webkit-scrollbar {
-  width: 0; /* Removes the scrollbar */
-  height: 0;
-}
-
-.messages-wrapper {
-  -ms-overflow-style: none; /* For Internet Explorer 10+ */
-  scrollbar-width: none; /* For Firefox */
-}
-
-/* Chat Bubbles */
-.chat-bubble {
-  display: flex;
-  align-items: flex-start;
-  max-width: calc(100% - 50px);
-  width: max-content;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 20px 20px 20px 0;
-  background-color: #d0e7d2;
-  color: #1c2c4c;
-  box-shadow: -2px 2px 1px 1px #88ab8e;
-}
-
-.chat-bubble.right {
-  margin-left: auto;
-  border-radius: 20px 20px 0 20px;
-  background-color: #fff;
-}
-
-.chat-bubble__left {
-  width: 35px;
-  height: 35px;
-  margin-right: 10px;
-  border-radius: 50%;
-}
-
-.user-name {
-  margin-bottom: 5px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #1c2c4c;
-}
-
-.user-message {
-  word-break: break-all;
-}
-
-.message-time {
-  text-align: right;
-}
-
-/* Send Message */
-.send-message {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.message-actions {
-  position: relative;
-  left: -70px;
-}
-.message-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* changes edit */
-/* Chat Bubble Container */
-.chat-bubble-container {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  width: 100%;
-  position: relative; /* This is needed to position the actions relative to the container */
-}
-
-/* Message Bubble Styling */
-.chat-bubble {
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  border-radius: 20px;
-  background-color: #d0e7d2;
-  color: #1c2c4c;
-  box-shadow: -2px 2px 1px 1px #88ab8e;
-  word-wrap: break-word;
-  max-width: 100%; /* Ensure the bubble can resize based on message length */
-  position: relative; /* Allows positioning of the actions outside this bubble */
-}
-
-/* Right-aligned Messages */
-.chat-bubble.right {
-  margin-left: auto;
-  background-color: #fff;
-  border-radius: 20px 20px 0 20px;
 }
 
 /* Message Actions (Buttons) */
@@ -208,15 +176,4 @@ body {
 
 .message-actions button:hover {
   color: #888;
-}
-
-/* Username and Message */
-.user-name {
-  margin-bottom: 5px;
-  font-size: 0.9rem;
-  font-weight: bold;
-}
-
-.user-message {
-  word-break: break-word;
 }

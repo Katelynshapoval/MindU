@@ -21,19 +21,22 @@ body {
   src: url("../fonts/Arial-Rounded-Light.ttf");
 }
 
-/* Tips Container */
+/* Tips Container Styles */
 .tips {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
   height: 90vh;
+  gap: 50px;
   padding: 30px 0 40px;
+  overflow-y: scroll;
 }
 
 .tipCardContainer {
-  height: 90%;
+  width: 90%;
   display: flex;
+  align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 50px;
 }
@@ -48,4 +51,24 @@ body {
 
 .tipCard h2 {
   margin-bottom: 10px;
+}
+
+/* Add Tip Form Styles */
+.addTip {
+  display: flex;
+  flex-direction: column;
+}
+
+.addTip form {
+  display: flex;
+  height: 100%;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.addTip form textarea {
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 60%;
+  max-height: 60%;
 }

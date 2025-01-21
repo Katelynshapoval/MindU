@@ -1,36 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../firebase/firebase";
+import { db, auth } from "../firebase/firebase";
 import {
   collection,
-  getDocs,
   addDoc,
   updateDoc,
   doc,
   deleteDoc,
+  onSnapshot,
 } from "firebase/firestore";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { CiEdit } from "react-icons/ci";
 import "../css/tips.css";
 
 function Tips() {
+  const [uid, setUid] = useState(null); // Store the user's UID
   const [tips, setTips] = useState([]);
-  const [newTip, setNewTip] = useState({ Name: "", Description: "" });
+  const [newTip, setNewTip] = useState({
+    Name: "",
+    Description: "",
+    Creator: "",
+  });
   const [editingTipId, setEditingTipId] = useState(null); // Track the tip being edited
 
-  // Fetch tips from Firestore
+  // Track the user's authentication state and UID
   useEffect(() => {
-    const fetchTips = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "tips"));
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setUid(user ? user.uid : null);
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Listen for real-time updates to the "tips" collection
+  useEffect(() => {
+    const unsubscribeTips = onSnapshot(
+      collection(db, "tips"),
+      (querySnapshot) => {
         const tipsList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
         setTips(tipsList);
-      } catch (error) {
-        console.error("Error fetching tips:", error);
+      },
+      (error) => {
+        console.error("Error listening for tips changes:", error);
       }
-    };
+    );
 
-    fetchTips();
+    return () => unsubscribeTips(); // Cleanup listener on unmount
   }, []);
 
   // Handle input change
@@ -42,9 +58,15 @@ function Tips() {
     }));
   };
 
-  // Handle adding a new tip
+  // Handle adding or updating a tip
   const handleAddOrUpdateTip = async (e) => {
     e.preventDefault();
+
+    // Ensure required fields are filled
+    if (!uid) {
+      alert("You must be logged in to add tips.");
+      return;
+    }
 
     if (!newTip.Name || !newTip.Description) {
       alert("Please fill out all fields!");
@@ -55,23 +77,39 @@ function Tips() {
       if (editingTipId) {
         // Update existing tip
         const tipRef = doc(db, "tips", editingTipId);
-        await updateDoc(tipRef, newTip);
-        setTips((prev) =>
-          prev.map((tip) =>
-            tip.id === editingTipId ? { ...tip, ...newTip } : tip
-          )
-        );
+        await updateDoc(tipRef, { ...newTip, Creator: uid });
         setEditingTipId(null);
       } else {
         // Add new tip
-        const docRef = await addDoc(collection(db, "tips"), newTip);
-        setTips((prev) => [...prev, { id: docRef.id, ...newTip }]);
+        const tipWithCreator = { ...newTip, Creator: uid };
+        await addDoc(collection(db, "tips"), tipWithCreator);
       }
 
-      // Reset form
-      setNewTip({ Name: "", Description: "" });
+      // Reset the form
+      setNewTip({ Name: "", Description: "", Creator: "" });
     } catch (error) {
       console.error("Error adding/updating tip:", error);
+    }
+  };
+
+  // Delete tip
+  const deleteTip = async (id) => {
+    try {
+      await deleteDoc(doc(db, "tips", id));
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
+
+  const editTip = async (id) => {
+    const tipToEdit = tips.find((tip) => tip.id === id);
+    if (tipToEdit) {
+      setNewTip({
+        Name: tipToEdit.Name,
+        Description: tipToEdit.Description,
+        Creator: tipToEdit.Creator,
+      });
+      setEditingTipId(id);
     }
   };
 
@@ -84,8 +122,20 @@ function Tips() {
         ) : (
           tips.map((tip) => (
             <div key={tip.id} className="tipCard">
-              <h2>{tip.Name}</h2>
-              <p>{tip.Description}</p>
+              <div>
+                <h2>{tip.Name}</h2>
+                <p>{tip.Description}</p>
+              </div>
+              {uid === tip.Creator && (
+                <div>
+                  <button className="iconTip" onClick={() => deleteTip(tip.id)}>
+                    <RiDeleteBin6Line size={20} />
+                  </button>
+                  <button className="iconTip" onClick={() => editTip(tip.id)}>
+                    <CiEdit size={20} />
+                  </button>
+                </div>
+              )}
             </div>
           ))
         )}

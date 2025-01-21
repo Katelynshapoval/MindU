@@ -47,10 +47,19 @@ body {
   padding: 24px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   text-align: center;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
 
 .tipCard h2 {
   margin-bottom: 10px;
+}
+.iconTip {
+  background-color: transparent;
+  border: none;
+  size: 50px;
+  cursor: pointer;
 }
 
 /* Add Tip Form Styles */

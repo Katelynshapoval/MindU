@@ -172,6 +172,7 @@ body {
   color: #1c2c4c;
   cursor: pointer;
   margin-bottom: 5px;
+  color: black;
 }
 
 .message-actions button:hover {

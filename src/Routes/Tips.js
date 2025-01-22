@@ -8,8 +8,8 @@ import {
   deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { CiEdit } from "react-icons/ci";
+import { MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import "../css/tips.css";
 
 function Tips() {
@@ -117,50 +117,52 @@ function Tips() {
     <div className="tips">
       <h1>Tips</h1>
       <div className="tipCardContainer">
-        {tips.length === 0 ? (
+        {tips.length === 0 && !uid ? (
           <p>No tips available</p>
         ) : (
           tips.map((tip) => (
             <div key={tip.id} className="tipCard">
-              <div>
+              <div className="tipCardText">
                 <h2>{tip.Name}</h2>
                 <p>{tip.Description}</p>
               </div>
               {uid === tip.Creator && (
-                <div>
+                <div className="tipCardButtons">
                   <button className="iconTip" onClick={() => deleteTip(tip.id)}>
-                    <RiDeleteBin6Line size={20} />
+                    <MdDelete size={20} />
                   </button>
                   <button className="iconTip" onClick={() => editTip(tip.id)}>
-                    <CiEdit size={20} />
+                    <MdEdit size={20} />
                   </button>
                 </div>
               )}
             </div>
           ))
         )}
-
-        <div className="addTip tipCard">
-          <h2>{editingTipId ? "Edit Tip" : "Add a New Tip"}</h2>
-          <form onSubmit={handleAddOrUpdateTip}>
-            <input
-              type="text"
-              name="Name"
-              placeholder="Tip Name"
-              value={newTip.Name}
-              onChange={handleInputChange}
-            />
-            <textarea
-              name="Description"
-              placeholder="Tip Description"
-              value={newTip.Description}
-              onChange={handleInputChange}
-            ></textarea>
-            <button type="submit">
-              {editingTipId ? "Update Tip" : "Add Tip"}
-            </button>
-          </form>
-        </div>
+        {uid && (
+          <div className="addTip tipCard">
+            <h2>{editingTipId ? "Edit Tip" : "Add a New Tip"}</h2>
+            <form onSubmit={handleAddOrUpdateTip}>
+              <input
+                type="text"
+                name="Name"
+                placeholder="Tip Name"
+                value={newTip.Name}
+                onChange={handleInputChange}
+              />
+              <textarea
+                name="Description"
+                placeholder="Tip Description"
+                value={newTip.Description}
+                onChange={handleInputChange}
+                maxLength={300}
+              ></textarea>
+              <button type="submit" id="submit">
+                {editingTipId ? "Update Tip" : "Add Tip"}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );

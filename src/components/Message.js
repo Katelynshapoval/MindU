@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { auth, db } from "../firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
-import { CiEdit } from "react-icons/ci";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 const Message = ({ message, onEdit }) => {
   const [user] = useAuthState(auth); // Get current authenticated user
@@ -30,10 +30,10 @@ const Message = ({ message, onEdit }) => {
       {isUserMessage && (
         <div className="message-actions">
           <button onClick={editMessage}>
-            <CiEdit />
+            <MdEdit />
           </button>
           <button onClick={deleteMessage}>
-            <RiDeleteBin6Line />
+            <MdDelete />
           </button>
         </div>
       )}

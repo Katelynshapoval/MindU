@@ -11,6 +11,8 @@ import {
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import "../css/tips.css";
+import { FaCircleArrowUp } from "react-icons/fa6";
+import { AiOutlineClose } from "react-icons/ai";
 
 function Tips() {
   const [uid, setUid] = useState(null); // Store the user's UID
@@ -163,6 +165,18 @@ function Tips() {
             </form>
           </div>
         )}
+      </div>
+      <div className="commentsContainer">
+        <button id="closeComments">
+          <AiOutlineClose />
+        </button>
+        <div className="chatComments"></div>
+        <div className="commentInput">
+          <input></input>
+          <button id="sendComment">
+            <FaCircleArrowUp />
+          </button>
+        </div>
       </div>
     </div>
   );

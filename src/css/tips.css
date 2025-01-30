@@ -76,6 +76,10 @@ body {
   cursor: pointer;
 }
 
+.iconTip:hover {
+  color: #ffffffc9;
+}
+
 .tipCardButtons {
   display: flex;
   justify-content: center;
@@ -86,6 +90,7 @@ body {
 .addTip {
   display: flex;
   flex-direction: column;
+  box-shadow: #72de84e0 0px 5px 15px;
 }
 
 .addTip form {
@@ -124,4 +129,76 @@ textarea:focus {
   border-color: #88ab8e;
   outline: 0;
   box-shadow: 0 0 0 0.25rem #88ab8e54;
+}
+
+/* Comments */
+.commentsContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  width: 600px;
+  height: 400px;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.chatComments {
+  background-color: red;
+  flex-grow: 1;
+}
+
+#closeComments {
+  text-align: right;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  padding-top: 12px;
+  padding-right: 29px;
+  font-size: 30px;
+}
+
+#closeComments:hover {
+  color: rgba(101, 110, 102, 0.788);
+}
+
+.commentInput {
+  position: relative;
+  width: 100%;
+  padding: 10px;
+}
+
+.commentInput input {
+  width: 100%;
+  height: 52px;
+  padding: 10px 25px;
+  font-size: 16px;
+  color: white;
+  background-color: black;
+  border: none;
+  border-radius: 30px;
+  outline: none;
+}
+
+#sendComment {
+  position: absolute;
+  top: 50%;
+  right: 30px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+#sendComment:hover {
+  color: rgba(255, 255, 255, 0.788);
 }

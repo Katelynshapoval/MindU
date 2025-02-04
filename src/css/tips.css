@@ -81,7 +81,8 @@ body {
   color: rgb(30, 63, 36);
 }
 
-.tipCardButtons {
+.tipCardButtons,
+.creatorIcons {
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -160,7 +161,6 @@ textarea:focus {
 }
 
 .chatComments {
-  background-color: rgb(162, 186, 230);
   flex-grow: 1;
 }
 
@@ -192,7 +192,7 @@ textarea:focus {
   padding: 10px 25px;
   font-size: 16px;
   color: white;
-  background-color: black;
+  background-color: #404d42;
   border: none;
   border-radius: 30px;
   outline: none;
@@ -215,4 +215,43 @@ textarea:focus {
 
 #sendComment:hover {
   color: rgba(255, 255, 255, 0.788);
+}
+
+/* Chat for comments */
+.chatComments {
+  height: 100%;
+  padding-right: 10px;
+  padding-left: 10px;
+  overflow-y: scroll; /* Enables vertical scrolling */
+}
+
+.chatComments::-webkit-scrollbar {
+  width: 0; /* Removes the scrollbar */
+  height: 0;
+}
+
+.chatComments {
+  -ms-overflow-style: none; /* For Internet Explorer 10+ */
+  scrollbar-width: none; /* For Firefox */
+}
+.comment-bubble {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border-radius: 20px;
+  background-color: #d0e7d2;
+  color: #1c2c4c;
+  box-shadow: -2px 2px 1px 1px #88ab8e;
+  word-wrap: break-word;
+  position: relative; /* Allows positioning of the actions outside this bubble */
+  max-width: 300px;
+  text-wrap: wrap;
+  margin-bottom: 20px;
+  margin-left: 10px;
+}
+
+.comment-bubble.right-comment {
+  margin-left: auto;
+  background-color: #fff;
+  border-radius: 20px 20px 0 20px;
 }

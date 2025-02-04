@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase/firebase";
 import {
   collection,
@@ -7,36 +7,26 @@ import {
   doc,
   deleteDoc,
   onSnapshot,
-  serverTimestamp,
   query,
-  orderBy,
+  where,
+  getDocs,
 } from "firebase/firestore";
-import { Timestamp } from "firebase/firestore";
-import { MdEdit } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
-import { MdComment } from "react-icons/md";
+import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import "../css/tips.css";
-import { FaCircleArrowUp } from "react-icons/fa6";
-import { AiOutlineClose } from "react-icons/ai";
+import Comments from "./TipsComments";
 
 function Tips() {
-  const [uid, setUid] = useState(null); // Store the user's UID
+  const [uid, setUid] = useState(null);
   const [tips, setTips] = useState([]);
   const [newTip, setNewTip] = useState({
     Name: "",
     Description: "",
     Creator: "",
   });
-  const [editingTipId, setEditingTipId] = useState(null); // Track the tip being edited
-  const [commentsVisible, setCommentsVisible] = useState(null);
-  const [openedComment, setOpenedComment] = useState({});
-  const [comments, setComments] = useState([]);
+  const [editingTipId, setEditingTipId] = useState(null);
+  const [openedComment, setOpenedComment] = useState(null);
 
-  // Ref for the comment input field
-  const commentInputRef = useRef(null);
-  const commentMenuRef = useRef(null);
-  const [newComment, setNewComment] = useState("");
-  // Track the user's authentication state and UID
+  // Authentication state
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       setUid(user ? user.uid : null);
@@ -44,7 +34,7 @@ function Tips() {
     return () => unsubscribeAuth();
   }, []);
 
-  // Listen for real-time updates to the "tips" collection
+  // Fetch tips
   useEffect(() => {
     const unsubscribeTips = onSnapshot(
       collection(db, "tips"),
@@ -56,43 +46,14 @@ function Tips() {
         setTips(tipsList);
       },
       (error) => {
-        console.error("Error listening for tips changes:", error);
-      }
-    );
-    const unsubscribeComments = onSnapshot(
-      query(collection(db, "comments"), orderBy("createdAt", "asc")),
-      (querySnapshot) => {
-        const commentsList = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setComments(commentsList);
-      },
-      (error) => {
-        console.error("Error listening for comments changes:", error);
+        console.error("Error fetching tips:", error);
       }
     );
 
-    const handleClickOutside = (event) => {
-      if (
-        commentMenuRef.current && // Ensure sidebar ref is initialized
-        !commentMenuRef.current.contains(event.target) // Check if the click is outside the sidebar
-      ) {
-        setCommentsVisible(false); // Close the comments
-      }
-    };
-
-    // Attach event listener to document
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      unsubscribeTips();
-      unsubscribeComments();
-      document.removeEventListener("mousedown", handleClickOutside);
-    }; // Cleanup listener on unmount
+    return () => unsubscribeTips();
   }, []);
 
-  // Handle input change
+  // Handle tip input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewTip((prev) => ({
@@ -101,23 +62,14 @@ function Tips() {
     }));
   };
 
-  // Focus the input field when the comment section is opened
-  useEffect(() => {
-    if (commentsVisible && commentInputRef.current) {
-      commentInputRef.current.focus();
-    }
-  }, [commentsVisible]);
-
-  // Handle adding or updating a tip
+  // Add or update tip
   const handleAddOrUpdateTip = async (e) => {
     e.preventDefault();
 
-    // Ensure required fields are filled
     if (!uid) {
       alert("You must be logged in to add tips.");
       return;
     }
-
     if (!newTip.Name || !newTip.Description) {
       alert("Please fill out all fields!");
       return;
@@ -125,40 +77,45 @@ function Tips() {
 
     try {
       if (editingTipId) {
-        // Update existing tip
-        const tipRef = doc(db, "tips", editingTipId);
-        await updateDoc(tipRef, { ...newTip, Creator: uid });
+        await updateDoc(doc(db, "tips", editingTipId), {
+          ...newTip,
+          Creator: uid,
+        });
         setEditingTipId(null);
       } else {
-        // Add new tip
-        const tipWithCreator = { ...newTip, Creator: uid };
-        await addDoc(collection(db, "tips"), tipWithCreator);
+        await addDoc(collection(db, "tips"), { ...newTip, Creator: uid });
       }
-
-      // Reset the form
       setNewTip({ Name: "", Description: "", Creator: "" });
     } catch (error) {
       console.error("Error adding/updating tip:", error);
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevent new lines in textarea
-      handleAddOrUpdateTip(e);
-    }
-  };
-
-  // Delete tip
+  // Delete a tip
   const deleteTip = async (id) => {
     try {
+      // Get all comments associated with the tip
+      const commentsQuery = query(
+        collection(db, "comments"),
+        where("tipId", "==", id)
+      );
+      const commentsSnapshot = await getDocs(commentsQuery);
+
+      // Delete each comment individually
+      const deletePromises = commentsSnapshot.docs.map((commentDoc) =>
+        deleteDoc(doc(db, "comments", commentDoc.id))
+      );
+      await Promise.all(deletePromises);
+
+      // Now delete the tip
       await deleteDoc(doc(db, "tips", id));
     } catch (error) {
-      console.error("Error deleting message:", error);
+      console.error("Error deleting tip:", error);
     }
   };
 
-  const editTip = async (id) => {
+  // Edit a tip
+  const editTip = (id) => {
     const tipToEdit = tips.find((tip) => tip.id === id);
     if (tipToEdit) {
       setNewTip({
@@ -168,24 +125,6 @@ function Tips() {
       });
       setEditingTipId(id);
     }
-  };
-
-  const sendComment = async (e) => {
-    e.preventDefault(); // Prevent form default submission behavior
-    if (newComment.trim() === "") {
-      // Ensure comment is not empty
-      alert("Enter valid comment");
-      return;
-    }
-    const { uid, displayName, photoURL } = auth.currentUser;
-    const localTimestamp = Timestamp.now();
-    await addDoc(collection(db, "comments"), {
-      text: newComment,
-      createdAt: localTimestamp, // Temporary local timestamp
-      uid: uid, // User ID
-      tipId: openedComment.id,
-    });
-    setNewComment("");
   };
 
   return (
@@ -201,25 +140,28 @@ function Tips() {
                 <h2>{tip.Name}</h2>
                 <p>{tip.Description}</p>
               </div>
-              {uid === tip.Creator && (
-                <div className="tipCardButtons">
-                  <button className="iconTip" onClick={() => deleteTip(tip.id)}>
-                    <MdDelete size={20} />
-                  </button>
-                  <button className="iconTip" onClick={() => editTip(tip.id)}>
-                    <MdEdit size={20} />
-                  </button>
-                  <button
-                    className="iconTip"
-                    onClick={() => {
-                      setCommentsVisible(true);
-                      setOpenedComment(tip);
-                    }}
-                  >
-                    <MdComment size={20} />
-                  </button>
-                </div>
-              )}
+
+              <div className="tipCardButtons">
+                {uid === tip.Creator && (
+                  <div className="creatorIcons">
+                    <button
+                      className="iconTip"
+                      onClick={() => deleteTip(tip.id)}
+                    >
+                      <MdDelete size={20} />
+                    </button>
+                    <button className="iconTip" onClick={() => editTip(tip.id)}>
+                      <MdEdit size={20} />
+                    </button>
+                  </div>
+                )}
+                <button
+                  className="iconTip"
+                  onClick={() => setOpenedComment(tip)}
+                >
+                  <MdComment size={20} />
+                </button>
+              </div>
             </div>
           ))
         )}
@@ -233,57 +175,19 @@ function Tips() {
                 placeholder="Tip Name"
                 value={newTip.Name}
                 onChange={handleInputChange}
-                onKeyDown={handleKeyDown} // Listen for Enter key
               />
-
               <textarea
                 name="Description"
                 placeholder="Tip Description"
                 value={newTip.Description}
                 onChange={handleInputChange}
-                maxLength={300}
-                onKeyDown={handleKeyDown} // Listen for Enter key
               ></textarea>
             </form>
           </div>
         )}
       </div>
-      {commentsVisible && (
-        <div className="commentsContainer" ref={commentMenuRef}>
-          <div className="commentsHeader">
-            <p>{openedComment.Name}</p>
-            <button
-              id="closeComments"
-              onClick={() => {
-                setCommentsVisible(false);
-                setOpenedComment(null);
-              }}
-            >
-              <AiOutlineClose />
-            </button>
-          </div>
-          <div className="chatComments">
-            {comments
-              ?.filter((comment) => comment.tipId === openedComment.id)
-              .map((comment) => (
-                <p key={comment.id}>{comment.text}</p>
-              ))}
-          </div>
-          <form
-            onSubmit={sendComment}
-            className="commentInput"
-            autoComplete="off"
-          >
-            <input
-              ref={commentInputRef}
-              onChange={(e) => setNewComment(e.target.value)}
-              value={newComment}
-            ></input>
-            <button type="submit" id="sendComment">
-              <FaCircleArrowUp />
-            </button>
-          </form>
-        </div>
+      {openedComment && (
+        <Comments tip={openedComment} onClose={() => setOpenedComment(null)} />
       )}
     </div>
   );

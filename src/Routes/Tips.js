@@ -14,10 +14,13 @@ import {
 import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import "../css/tips.css";
 import Comments from "./TipsComments";
+import { FaCaretDown, FaCaretRight } from "react-icons/fa";
 
 function Tips() {
   const [uid, setUid] = useState(null);
   const [tips, setTips] = useState([]);
+  const [showProTips, setShowProTips] = useState(false);
+  const [showUserTips, setShowUserTips] = useState(false);
   const [newTip, setNewTip] = useState({
     Name: "",
     Description: "",
@@ -163,82 +166,102 @@ function Tips() {
     <div className="tips">
       <h1>Tips</h1>
       <div className="tipSection">
-        <h2>Tips by professionals</h2>
-        <div className="tipCardContainer">
-          {professionalTips.map((tip) => (
-            <div key={tip.id} className="tipCard">
-              <div className="tipCardText">
-                <h2>{tip.Name}</h2>
-                <p>{tip.Description}</p>
+        <h2
+          onClick={() => setShowProTips(!showProTips)}
+          className="dropdownTitle"
+        >
+          Tips by professionals{" "}
+          {showProTips ? <FaCaretRight /> : <FaCaretDown />}
+        </h2>
+        {showProTips && (
+          <div className="tipCardContainer">
+            {professionalTips.map((tip) => (
+              <div key={tip.id} className="tipCard">
+                <div className="tipCardText">
+                  <h2>{tip.Name}</h2>
+                  <p>{tip.Description}</p>
+                </div>
+                <div className="tipCardButtons">
+                  <button
+                    className="iconTip"
+                    onClick={() => setOpenedComment(tip)}
+                  >
+                    <MdComment size={20} />
+                  </button>
+                </div>
               </div>
-              <div className="tipCardButtons">
-                <button
-                  className="iconTip"
-                  onClick={() => setOpenedComment(tip)}
-                >
-                  <MdComment size={20} />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <hr width="95%" color="black" />
-      <div className="tipCardContainer">
-        <h2>Tips by users</h2>
-        {tips.length === 0 && !uid ? (
-          <p>No tips available</p>
-        ) : (
-          tips.map((tip) => (
-            <div key={tip.id} className="tipCard">
-              <div className="tipCardText">
-                <h2>{tip.Name}</h2>
-                <p>{tip.Description}</p>
-              </div>
+      <div className="tipSection">
+        <h2
+          onClick={() => setShowUserTips(!showUserTips)}
+          className="dropdownTitle"
+        >
+          Tips by users {showUserTips ? <FaCaretRight /> : <FaCaretDown />}
+        </h2>
+        {showUserTips && (
+          <div className="tipCardContainer">
+            {tips.length === 0 && !uid ? (
+              <p>No tips available</p>
+            ) : (
+              tips.map((tip) => (
+                <div key={tip.id} className="tipCard">
+                  <div className="tipCardText">
+                    <h2>{tip.Name}</h2>
+                    <p>{tip.Description}</p>
+                  </div>
 
-              <div className="tipCardButtons">
-                {uid === tip.Creator && (
-                  <div className="creatorIcons">
+                  <div className="tipCardButtons">
+                    {uid === tip.Creator && (
+                      <div className="creatorIcons">
+                        <button
+                          className="iconTip"
+                          onClick={() => deleteTip(tip.id)}
+                        >
+                          <MdDelete size={20} />
+                        </button>
+                        <button
+                          className="iconTip"
+                          onClick={() => editTip(tip.id)}
+                        >
+                          <MdEdit size={20} />
+                        </button>
+                      </div>
+                    )}
                     <button
                       className="iconTip"
-                      onClick={() => deleteTip(tip.id)}
+                      onClick={() => setOpenedComment(tip)}
                     >
-                      <MdDelete size={20} />
-                    </button>
-                    <button className="iconTip" onClick={() => editTip(tip.id)}>
-                      <MdEdit size={20} />
+                      <MdComment size={20} />
                     </button>
                   </div>
-                )}
-                <button
-                  className="iconTip"
-                  onClick={() => setOpenedComment(tip)}
-                >
-                  <MdComment size={20} />
-                </button>
+                </div>
+              ))
+            )}
+            {uid && (
+              <div className="addTip tipCard">
+                <h2>{editingTipId ? "Edit Tip" : "Add a New Tip"}</h2>
+                <form onSubmit={handleAddOrUpdateTip} autoComplete="off">
+                  <input
+                    type="text"
+                    name="Name"
+                    placeholder="Tip Name"
+                    value={newTip.Name}
+                    onChange={handleInputChange}
+                  />
+                  <textarea
+                    name="Description"
+                    placeholder="Tip Description"
+                    value={newTip.Description}
+                    onChange={handleInputChange}
+                  ></textarea>
+                </form>
               </div>
-            </div>
-          ))
-        )}
-        {uid && (
-          <div className="addTip tipCard">
-            <h2>{editingTipId ? "Edit Tip" : "Add a New Tip"}</h2>
-            <form onSubmit={handleAddOrUpdateTip} autoComplete="off">
-              <input
-                type="text"
-                name="Name"
-                placeholder="Tip Name"
-                value={newTip.Name}
-                onChange={handleInputChange}
-              />
-              <textarea
-                name="Description"
-                placeholder="Tip Description"
-                value={newTip.Description}
-                onChange={handleInputChange}
-              ></textarea>
-            </form>
+            )}
           </div>
         )}
       </div>

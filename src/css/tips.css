@@ -54,6 +54,10 @@ body {
 
 .tipSection h2 {
   margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .tipCard {

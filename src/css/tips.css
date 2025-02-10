@@ -33,12 +33,27 @@ body {
 }
 
 .tipCardContainer {
-  width: 90%;
+  /* width: 90%; */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: 50px;
+}
+
+.tipCardContainer h2 {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.tipSection {
+  width: 90%;
+  text-align: center;
+}
+
+.tipSection h2 {
+  margin-bottom: 30px;
 }
 
 .tipCard {

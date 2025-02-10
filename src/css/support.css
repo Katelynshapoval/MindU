@@ -1,0 +1,140 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial-Rounded-Light, sans-serif;
+}
+
+body {
+  overflow: hidden;
+}
+
+/* Custom Fonts */
+@font-face {
+  font-family: Arial-Rounded;
+  src: url("../fonts/Arial-Rounded.ttf");
+}
+
+@font-face {
+  font-family: Arial-Rounded-Light;
+  src: url("../fonts/Arial-Rounded-Light.ttf");
+}
+
+.support {
+  display: flex;
+  height: 90vh;
+  padding: 30px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.support h1 {
+  font-size: 64px;
+}
+
+.typicalProblems {
+  display: flex;
+  width: 70%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 30px;
+}
+
+.typicalProblem {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 800px;
+  border-radius: 10px;
+  background-color: #d0e7d2;
+  margin-bottom: 15px;
+  border: 1px solid #88ab8e;
+}
+
+.problemName {
+  font-weight: bold;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.formInitiation {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+#showFormButton {
+  height: 52px;
+  width: 200px;
+  font-size: 20px;
+  background-color: #a6c9ac;
+  border: 1px solid #869989;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#formReportProblem {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #a6c9ac;
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin: 14px;
+  gap: 6px;
+}
+
+.field textarea {
+  max-width: 500px;
+  width: 500px;
+  min-height: 100px;
+  max-height: 300px;
+}
+
+.formHeader {
+  display: flex;
+  font-size: 25px;
+  padding: 14px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#closeForm {
+  text-align: right;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  font-size: 30px;
+
+  display: flex; /* Ensures the icon is centered */
+  align-items: center;
+  justify-content: center;
+}
+
+#closeForm:hover {
+  color: rgba(101, 110, 102, 0.788);
+}
+
+#submitForm {
+  width: 100px;
+  height: 30px;
+  align-self: center;
+  background-color: #a6c9ac;
+  border: 1px solid #869989;
+  border-radius: 8px;
+  cursor: pointer;
+}

@@ -171,7 +171,7 @@ function Tips() {
           className="dropdownTitle"
         >
           Tips by professionals{" "}
-          {showProTips ? <FaCaretRight /> : <FaCaretDown />}
+          {showProTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
         {showProTips && (
           <div className="tipCardContainer">
@@ -201,7 +201,7 @@ function Tips() {
           onClick={() => setShowUserTips(!showUserTips)}
           className="dropdownTitle"
         >
-          Tips by users {showUserTips ? <FaCaretRight /> : <FaCaretDown />}
+          Tips by users {showUserTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
         {showUserTips && (
           <div className="tipCardContainer">

@@ -17,8 +17,7 @@
 }
 
 /* Page Layout */
-.home,
-.support {
+.home {
   display: flex;
   height: 90vh;
   align-items: center;

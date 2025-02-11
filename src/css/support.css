@@ -77,6 +77,11 @@ body {
   border: 1px solid #869989;
   border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+}
+
+#showFormButton:hover {
+  background-color: #a6c9ac83;
 }
 
 #formReportProblem {
@@ -137,4 +142,9 @@ body {
   border: 1px solid #869989;
   border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+}
+
+#submitForm:hover {
+  background-color: #a6c9ac83;
 }

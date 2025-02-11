@@ -13,6 +13,9 @@ import SendMessage from "./SendMessage";
 const ChatBox = () => {
   const [messages, setMessages] = useState([]); // State to hold the list of messages
   const [editMessageData, setEditMessageData] = useState(null); // State for the message being edited
+  const [nickname, setNickname] = useState(
+    localStorage.getItem("nickname") || "Anonymous"
+  ); // Default to "Anonymous"
   const scroll = useRef(); // Reference to scroll to the bottom of the chat
 
   // Query to fetch messages ordered by creation time, limiting to 50
@@ -49,8 +52,35 @@ const ChatBox = () => {
     setEditMessageData(message); // Set message data to be edited
   };
 
+  // Function to handle nickname change
+  const handleNicknameChange = (e) => {
+    setNickname(e.target.value); // Update nickname state
+  };
+
+  // Save nickname to localStorage when "Enter" is pressed
+  const handleNicknameKeyPress = (e) => {
+    if (e.key === "Enter" && nickname.trim() !== "") {
+      e.preventDefault(); // Prevent form submission
+      localStorage.setItem("nickname", nickname); // Save nickname to localStorage
+      alert(`Tu nombre ha sido cambiado a ${e.target.value}.`);
+    }
+  };
+
   return (
     <main className="chat-box">
+      {/* Nickname Input Form */}
+      <form className="nickname-form">
+        <label htmlFor="nickname">Nickname: </label>
+        <input
+          type="text"
+          id="nickname"
+          value={nickname}
+          onChange={handleNicknameChange} // Allow user to change nickname
+          onKeyDown={handleNicknameKeyPress} // Detect Enter key press to save nickname
+          placeholder="Anonymous"
+        />
+      </form>
+
       <div
         className="messages-wrapper"
         style={{ overflowY: "auto", height: "80vh" }}
@@ -64,12 +94,14 @@ const ChatBox = () => {
         ))}
         <div ref={scroll}></div>
       </div>
+
+      {/* SendMessage Component with nickname as a prop */}
       <SendMessage
         scroll={scroll}
         editMessageData={editMessageData} // Pass the edit data to SendMessage
         setEditMessageData={setEditMessageData} // Pass the setter to reset after editing
-      />{" "}
-      {/* SendMessage with edit functionality */}
+        nickname={nickname} // Pass nickname down to SendMessage
+      />
     </main>
   );
 };

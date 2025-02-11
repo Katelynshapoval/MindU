@@ -1,0 +1,130 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial-Rounded-Light, sans-serif;
+}
+
+/* Prevent unwanted scrolling */
+body {
+  overflow-x: hidden; /* Prevents horizontal scrolling */
+  background-color: #f5f5f5; /* Optional: Adds a light background */
+}
+
+/* Custom Fonts */
+@font-face {
+  font-family: Arial-Rounded;
+  src: url("../fonts/Arial-Rounded.ttf");
+}
+
+@font-face {
+  font-family: Arial-Rounded-Light;
+  src: url("../fonts/Arial-Rounded-Light.ttf");
+}
+
+/* Home Container */
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90vh; /* Allows content to grow naturally */
+  padding-bottom: 40px; /* Adds space at the bottom */
+  overflow-y: auto;
+}
+
+/* Header Section */
+#headerHome {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #627560;
+  color: white;
+  gap: 20px;
+  padding: 40px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#headerHome img {
+  width: 100px;
+}
+
+#headerHome p {
+  text-align: center;
+  max-width: 500px;
+}
+
+/* Call-to-action Button */
+#homeButton {
+  background-color: #3d3c3c;
+  color: white;
+  height: 56px;
+  width: 195px;
+  font-size: 24px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+#homeButton:hover {
+  background-color: #2a2929;
+}
+
+/* Articles Section */
+#articlesContainer {
+  width: 100%;
+  max-width: 1000px; /* Keeps carousel aligned */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#articlesContainer h2 {
+  margin-bottom: 30px;
+}
+
+/* Carousel Container */
+.carousel-container {
+  width: 80%;
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* Dots (Pagination) */
+.react-multi-carousel-dot-list {
+  text-align: center;
+}
+
+.react-multi-carousel-dot button {
+  background: #ccc;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  border: none;
+  margin: 5px;
+}
+
+.react-multi-carousel-dot--active button {
+  background: #627560;
+}
+
+.article-card {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  align-items: center;
+  border: 1px solid black;
+  margin-right: 20px;
+  border-radius: 10px;
+  gap: 20px;
+}
+
+.article-card a {
+  list-style: none;
+  color: black;
+}

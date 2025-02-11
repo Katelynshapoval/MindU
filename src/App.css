@@ -16,17 +16,6 @@
   src: url("fonts/Arial-Rounded-Light.ttf");
 }
 
-/* Page Layout */
-.home {
-  display: flex;
-  height: 90vh;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  background-color: #ffffff;
-  color: #000000;
-}
-
 /* Navbar */
 .navbar {
   background-color: #1a1a19;

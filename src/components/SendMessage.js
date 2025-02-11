@@ -35,7 +35,7 @@ const SendMessage = ({ scroll, editMessageData, setEditMessageData }) => {
       return;
     }
 
-    const { uid, displayName, photoURL } = auth.currentUser;
+    const { uid, displayName } = auth.currentUser;
 
     if (editMessageData) {
       // If we are editing, update the existing message

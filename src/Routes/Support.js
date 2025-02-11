@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../css/support.css";
 import { AiOutlineClose } from "react-icons/ai";
-import { auth, db } from "../firebase/firebase"; // Import Firestore
+import { auth, db } from "../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 function Support() {
   const [openIndex, setOpenIndex] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const formRef = useRef(null); // Reference for the form
+  const problemRefs = useRef([]); // Refs for the problem descriptions
 
   const user = auth.currentUser;
   const [formData, setFormData] = useState({
     email: user?.email || "",
     problem: "",
-    foto: null,
+    photo: null,
     description: "",
   });
 
@@ -37,9 +38,15 @@ function Support() {
   };
 
   const handleClickOutside = (event) => {
+    // Check if the click is outside both the form and any problem description
     if (formRef.current && formRef.current.contains(event.target)) {
-      return; // Prevents closing when clicking inside the form
+      return; // Prevents closing the form when clicking inside the form
     }
+    if (problemRefs.current.some((ref) => ref && ref.contains(event.target))) {
+      return; // Prevents closing problem description if clicked inside the description
+    }
+    // If the click is outside of both, close the problem description
+    setOpenIndex(null);
     setShowForm(false);
   };
 
@@ -57,7 +64,7 @@ function Support() {
   // Handle file input separately
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setFormData((prev) => ({ ...prev, foto: file }));
+    setFormData((prev) => ({ ...prev, photo: file }));
   };
 
   // Handle form submission
@@ -69,12 +76,12 @@ function Support() {
         email: formData.email,
         problem: formData.problem,
         description: formData.description,
-        foto: formData.foto ? formData.foto.name : "", // Just storing the filename for now
+        photo: formData.foto ? formData.foto.name : "", // Just storing the filename for now
         timestamp: serverTimestamp(),
         userId: user?.uid || "anonymous",
       });
 
-      alert("Problema enviado correctamente.");
+      alert("Formulario enviado correctamente.");
       setShowForm(false);
       setFormData({
         email: user?.email || "",
@@ -83,8 +90,8 @@ function Support() {
         description: "",
       });
     } catch (error) {
-      console.error("Error al enviar el problema:", error);
-      alert("Hubo un error al enviar el problema.");
+      console.error("Error al enviar el formulario:", error);
+      alert("Hubo un error al enviar el formulario.");
     }
   };
 
@@ -103,9 +110,13 @@ function Support() {
             >
               {problem.name}
             </p>
-            {openIndex === index && (
-              <p className="problemDescription">{problem.description}</p>
-            )}
+            <div
+              ref={(el) => (problemRefs.current[index] = el)} // Attach ref to each problem
+            >
+              {openIndex === index && (
+                <p className="problemDescription">{problem.description}</p>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -121,57 +132,55 @@ function Support() {
           Escríbenos
         </button>
         {showForm && (
-          <div ref={formRef}>
-            <form id="formReportProblem" onSubmit={handleSubmit}>
-              <div className="formHeader">
-                <p>Formulario</p>
-                <button
-                  id="closeForm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowForm(false);
-                  }}
-                >
-                  <AiOutlineClose />
-                </button>
-              </div>
-              <div className="field">
-                <label htmlFor="email">Correo</label>
-                <input
-                  id="email"
-                  placeholder="tucorreo@gmail.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  readOnly
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="problem">Problema</label>
-                <input
-                  id="problem"
-                  value={formData.problem}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="foto">Foto</label>
-                <input id="foto" type="file" onChange={handleFileChange} />
-              </div>
-              <div className="field">
-                <label htmlFor="description">Descripción</label>
-                <textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <button type="submit" id="submitForm">
-                Enviar
+          <form id="formReportProblem" onSubmit={handleSubmit} ref={formRef}>
+            <div className="formHeader">
+              <p>Formulario</p>
+              <button
+                id="closeForm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowForm(false);
+                }}
+              >
+                <AiOutlineClose />
               </button>
-            </form>
-          </div>
+            </div>
+            <div className="field">
+              <label htmlFor="email">Correo</label>
+              <input
+                id="email"
+                placeholder="tucorreo@gmail.com"
+                value={formData.email}
+                onChange={handleChange}
+                readOnly
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="problem">Problema</label>
+              <input
+                id="problem"
+                value={formData.problem}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="foto">Foto</label>
+              <input id="foto" type="file" onChange={handleFileChange} />
+            </div>
+            <div className="field">
+              <label htmlFor="description">Descripción</label>
+              <textarea
+                id="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button type="submit" id="submitForm">
+              Enviar
+            </button>
+          </form>
         )}
       </div>
     </div>

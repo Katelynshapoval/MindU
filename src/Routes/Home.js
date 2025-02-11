@@ -1,9 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // For navigation
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import "../css/home.css";
 
 function Home() {
+  const navigate = useNavigate(); // Hook for navigation
+
   const articles = [
     {
       title: "Mental health of adolescents",
@@ -39,6 +42,7 @@ function Home() {
 
   return (
     <div className="home">
+      {/* Header Section */}
       <div id="headerHome">
         <img src="./images/logoWhite.png" alt="Logo" />
         <h1>EMPIEZA A CUIDAR TU SALUD MENTAL</h1>
@@ -47,9 +51,57 @@ function Home() {
           proporcionar a los estudiantes recursos esenciales que les ayuden a
           gestionar el estrés, la ansiedad y otros desafíos emocionales.
         </p>
-        <button id="homeButton">Comienza</button>
+        <button id="homeButton">
+          <a id="functionalityLink" href="#howItWorks">
+            Comienza
+          </a>
+        </button>
       </div>
 
+      {/* How It Works Section */}
+      <div id="howItWorks">
+        <h2>¿Cómo funciona?</h2>
+        <div className="features">
+          <div className="feature-card chatCard">
+            <div className="overlay">
+              <h3>Chat Anónimo</h3>
+              <p>Comparte tus pensamientos sin preocuparte por tu identidad.</p>
+              <button onClick={() => navigate("/chat")}>Ir al chat</button>
+            </div>
+          </div>
+          <div className="feature-card tipsCard">
+            <div className="overlay">
+              <h3>Consejos de Bienestar</h3>
+              <p>Descubre estrategias de profesionales y usuarios.</p>
+              <button onClick={() => navigate("/tips")}>
+                Explorar consejos
+              </button>
+            </div>
+          </div>
+          <div className="feature-card aiCard">
+            <div className="overlay">
+              <h3>Asistente AI</h3>
+              <p>Habla con una IA para recibir apoyo adicional.</p>
+              <button onClick={() => navigate("/assistant")}>
+                Hablar con AI
+              </button>
+            </div>
+          </div>
+          <div className="feature-card articlesCard">
+            <div className="overlay">
+              <h3>Artículos de Salud Mental</h3>
+              <p>Aprende más sobre el bienestar emocional.</p>
+              <button>
+                <a id="articlesLink" href="#articlesContainer">
+                  Ver artículos
+                </a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr id="homeHr" />
+      {/* Articles Section */}
       <div id="articlesContainer">
         <h2>Estos artículos podrían interesarte</h2>
 

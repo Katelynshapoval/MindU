@@ -64,7 +64,20 @@ function Support() {
   // Handle file input separately
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setFormData((prev) => ({ ...prev, photo: file }));
+    if (file) {
+      const validImageTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
+      if (!validImageTypes.includes(file.type)) {
+        alert("Por favor, sube solo imágenes (JPG, PNG, GIF, WEBP).");
+        e.target.value = ""; // Reset file input
+        return;
+      }
+      setFormData((prev) => ({ ...prev, photo: file }));
+    }
   };
 
   // Handle form submission

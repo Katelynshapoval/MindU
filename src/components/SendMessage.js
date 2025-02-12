@@ -18,6 +18,7 @@ const SendMessage = ({
 }) => {
   const [message, setMessage] = useState(""); // State to store the message
   const [showWarning, setShowWarning] = useState(false); // State to control the warning div
+  const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple submissions
   const inputRef = useRef(null); // Create a ref to the input field
 
   // Sensitive words list (in Spanish)
@@ -50,10 +51,15 @@ const SendMessage = ({
   // Function to handle sending or updating the message
   const sendMessage = async (event) => {
     event.preventDefault(); // Prevent form default submission behavior
+
+    if (isSubmitting) return; // Prevent multiple submissions
+
     if (message.trim() === "") {
-      alert("Enter valid message");
+      alert("Introduzca un mensaje válido.");
       return;
     }
+
+    setIsSubmitting(true); // Disable further submissions
 
     // Check if the message contains any sensitive words
     const messageLowerCase = message.toLowerCase();
@@ -63,35 +69,42 @@ const SendMessage = ({
 
     if (containsSensitiveWords) {
       setShowWarning(true); // Show the warning div if sensitive words are found
+      setIsSubmitting(false); // Re-enable submission if warning is shown
+      return;
     } else {
       setShowWarning(false); // Hide the warning div if no sensitive words
     }
 
     const { uid } = auth.currentUser;
 
-    if (editMessageData) {
-      // If we are editing, update the existing message
-      const messageRef = doc(db, "messages", editMessageData.id);
-      await updateDoc(messageRef, {
-        text: message,
-        updatedAt: serverTimestamp(),
-      });
+    try {
+      if (editMessageData) {
+        // If we are editing, update the existing message
+        const messageRef = doc(db, "messages", editMessageData.id);
+        await updateDoc(messageRef, {
+          text: message,
+          updatedAt: serverTimestamp(),
+        });
 
-      // Reset the edit state after updating the message
-      setEditMessageData(null);
-    } else {
-      // Otherwise, create a new message
-      const localTimestamp = Timestamp.now();
-      await addDoc(collection(db, "messages"), {
-        text: message,
-        name: nickname, // Use the nickname here
-        createdAt: localTimestamp, // Temporary local timestamp
-        uid, // User ID
-      });
+        // Reset the edit state after updating the message
+        setEditMessageData(null);
+      } else {
+        // Otherwise, create a new message
+        await addDoc(collection(db, "messages"), {
+          text: message,
+          name: nickname, // Use the nickname here
+          createdAt: Timestamp.now(), // Temporary local timestamp
+          uid, // User ID
+        });
+      }
+
+      setMessage(""); // Clear the input field
+      scroll.current.scrollIntoView({ behavior: "smooth" }); // Scroll to latest message
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
 
-    setMessage(""); // Clear the input field
-    scroll.current.scrollIntoView({ behavior: "smooth" }); // Scroll to latest message
+    setIsSubmitting(false); // Re-enable submission after sending
   };
 
   return (
@@ -99,8 +112,20 @@ const SendMessage = ({
       {/* Warning div for sensitive words */}
       {showWarning && (
         <div className="warning-div">
-          <p>If you need help, call XXX.</p>
-          <button onClick={() => setShowWarning(false)}>OK</button>
+          <p>
+            Si necesitas ayuda, llama <a href="tel:024">024</a>. <br /> Nunca
+            estás solo.
+          </p>
+
+          <button
+            autoFocus
+            onClick={() => {
+              setShowWarning(false);
+              inputRef.current?.focus(); // Refocus on input after closing warning
+            }}
+          >
+            OK
+          </button>
         </div>
       )}
 
@@ -110,12 +135,13 @@ const SendMessage = ({
             id="userInput"
             name="messageInput"
             type="text"
-            placeholder="Enter your message"
+            placeholder="Escribe tu mensaje..."
             value={message}
+            maxLength={500}
             onChange={(e) => setMessage(e.target.value)} // Update message state on change
             ref={inputRef} // Attach the ref to the input field + autofocus
           />
-          <button type="submit" id="submit">
+          <button type="submit" id="submit" disabled={isSubmitting}>
             <FaCircleArrowUp /> {/* Send icon */}
           </button>
         </div>

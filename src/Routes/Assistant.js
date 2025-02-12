@@ -8,6 +8,7 @@ function Assistant() {
   const [previousChats, setPreviousChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
   const [chatInputs, setChatInputs] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple submissions
   const scrollToEnd = useRef(null); // Reference to scroll to the bottom of the chat feed
   const sendMessageInputRef = useRef(null); // for autofocus
 
@@ -24,7 +25,13 @@ function Assistant() {
   };
 
   const getMessages = async () => {
-    if (!value.trim()) return; // Prevent sending empty messages
+    if (isSubmitting) return; // Prevent multiple submissions
+    if (!value.trim()) {
+      alert("Introduzca un mensaje válido.");
+      return;
+    } // Prevent sending empty messages
+
+    setIsSubmitting(true); // Disable further submissions
 
     const options = {
       method: "POST",
@@ -73,6 +80,8 @@ function Assistant() {
     } catch (error) {
       console.error(error);
     }
+
+    setIsSubmitting(false); // Re-enable submission after sending
   };
 
   useEffect(() => {
@@ -89,10 +98,12 @@ function Assistant() {
       scrollToEnd.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [previousChats]); // Depend on previousChats state to trigger scrolling when a new message is added
+
   // Autofocus on input
   useEffect(() => {
     sendMessageInputRef.current.focus();
   }, []);
+
   const currentChat = previousChats.filter(
     (previousChat) => previousChat.title === currentTitle
   );

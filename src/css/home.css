@@ -90,6 +90,7 @@ body {
 .features {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   align-items: center;
   gap: 100px;
 }
@@ -99,6 +100,7 @@ body {
   height: 300px;
   border-radius: 10px;
   background-size: cover;
+  background-color: white;
   background-position: center;
   display: flex;
   justify-content: center;
@@ -204,12 +206,21 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 20px;
+  padding: 25px;
   align-items: center;
   border: 1px solid black;
-  margin-right: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
   border-radius: 10px;
   gap: 20px;
+}
+
+.article-card h3 {
+  height: 20%;
+}
+.article-card p {
+  flex-grow: 1;
+  margin-top: 15%;
 }
 
 .article-card a {

@@ -9,34 +9,34 @@ function Home() {
 
   const articles = [
     {
-      title: "Mental health of adolescents",
+      title: "Ansiedad: Lo que usted debe saber",
       description:
-        "Learn about the mental health challenges faced by adolescents and ways to support them.",
-      link: "https://www.who.int/news-room/fact-sheets/detail/adolescent-mental-health",
+        "Las experiencias negativas en la infancia y la historia familiar tal vez aumenten el riesgo.",
+      link: "https://magazine.medlineplus.gov/es/art%C3%ADculo/ansiedad-lo-que-usted-debe-saber/",
     },
     {
-      title: "Body image",
+      title: "No dormir",
       description:
-        "Explore how body image affects mental well-being and self-esteem.",
-      link: "https://www.mentalhealth.org.uk/explore-mental-health/articles/body-image-report-executive-summary",
+        "Los lectores escriben sobre los problemas que causa la falta de sueño.",
+      link: "https://elpais.com/opinion/2025-02-09/no-dormir.html",
     },
     {
-      title: "Random acts of kindness",
+      title: "El silencio mata: suicidio entre los adolescentes",
       description:
-        "Discover how small acts of kindness can positively impact mental health.",
-      link: "https://www.mentalhealth.org.uk/explore-mental-health/kindness-and-mental-health/random-acts-kindness",
+        "Los expertos coinciden en que las conductas suicidas y las autolesiones no son el problema.",
+      link: "https://elpais.com/sociedad/2025-02-02/el-silencio-mata-como-y-por-que-hablar-del-suicidio-entre-los-adolescentes.html",
     },
     {
-      title:
-        "Ways to look after your mental health at times of political uncertainty",
+      title: "Hay algo peor que sentir emociones oscuras: evitarlas",
       description:
-        "Practical tips to maintain mental well-being during times of uncertainty.",
-      link: "https://www.mentalhealth.org.uk/explore-mental-health/articles/ways-look-after-your-mental-health-times-political-uncertainty",
+        "Priorizamos los acontecimientos negativos por encima de los positivos, lo cual parece… negativo.",
+      link: "https://elpais.com/eps/2025-01-16/hay-algo-peor-que-sentir-emociones-oscuras-evitarlas.html",
     },
     {
-      title: "Ten top tips for good sleep",
-      description: "Improve your sleep quality with these ten essential tips.",
-      link: "https://www.mentalhealth.org.uk/explore-mental-health/articles/ten-top-tips-good-sleep",
+      title: "Los contenidos negativos en redes",
+      description:
+        "Un nuevo estudio concluye que lo que perjudica la salud mental no es tanto el uso de internet como el tipo de información.",
+      link: "https://elpais.com/tecnologia/2024-12-17/los-contenidos-negativos-en-redes-afectan-mas-a-las-personas-con-peor-salud-mental.html",
     },
   ];
 
@@ -44,7 +44,7 @@ function Home() {
     <div className="home">
       {/* Header Section */}
       <div id="headerHome">
-        <img src="./images/logoWhite.png" alt="Logo" />
+        <img src="./images/logoooo.png" alt="Logo" />
         <h1>EMPIEZA A CUIDAR TU SALUD MENTAL</h1>
         <p>
           Una aplicación innovadora que integra tecnología y psicología para

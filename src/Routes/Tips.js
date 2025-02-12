@@ -10,11 +10,14 @@ import {
   query,
   where,
   getDocs,
+  serverTimestamp,
+  orderBy,
 } from "firebase/firestore";
 import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import "../css/tips.css";
 import Comments from "./TipsComments";
 import { FaCaretDown, FaCaretRight } from "react-icons/fa";
+import { Timestamp } from "firebase/firestore";
 
 function Tips() {
   const [uid, setUid] = useState(null);
@@ -32,31 +35,31 @@ function Tips() {
     {
       Name: "Snacks de movimiento",
       Description:
-        "Que consiste en cada 20/30 mins intentar ponerlos de pie y hacer algún movimiento articular, andar o hacer incluso alguna sentadilla o lo que queramos.",
+        "Cada 20-30 minutos, levántate y haz un movimiento: camina, estira o haz una sentadilla para activar el cuerpo.",
       id: 1,
     },
     {
       Name: "Actividad física",
       Description:
-        "Hay que priorizar la actividad física incluso las semanas de exámenes, para oxigenar y limpiar el cerebro, y mover las estructuras del cuerpo.",
+        "Prioriza el ejercicio, incluso en épocas de exámenes, para oxigenar el cerebro y reducir el estrés.",
       id: 2,
     },
     {
       Name: "⁠Higiene postural",
       Description:
-        "No es que existan posturas malas ni buenas, lo malo son posturas mantenidas, así que cada cierto tiempo cambiar de posición.",
+        "Evita mantener la misma postura por mucho tiempo. Cambia de posición regularmente.",
       id: 3,
     },
     {
       Name: "Ergonomía ",
       Description:
-        "Ergonomía en el escritorio, en cuanto a altura de sillas, ratón, teclado, pantalla central alineada con nuestro cuerpo.",
+        "Ajusta tu espacio de trabajo: silla, teclado y pantalla deben estar alineados para evitar lesiones.",
       id: 4,
     },
     {
       Name: "⁠Higiene del sueño",
       Description:
-        "Muy importante organizar y respetar el descanso, para tener mayor retención de lo que hayamos estudiado, y también para que los tejidos que puedan estar bajo estrés mecánico, que descansen.",
+        "Respeta tus horas de descanso para mejorar la retención y permitir que el cuerpo se recupere.",
       id: 5,
     },
   ];
@@ -71,8 +74,10 @@ function Tips() {
 
   // Fetch tips
   useEffect(() => {
+    const q = query(collection(db, "tips"), orderBy("createdAt", "desc")); // Order by createdAt in descending order
+
     const unsubscribeTips = onSnapshot(
-      collection(db, "tips"),
+      q,
       (querySnapshot) => {
         const tipsList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -91,10 +96,6 @@ function Tips() {
   // Handle tip input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // if (value.length > 10) {
-    //   alert("fuck offf");
-    //   return;
-    // }
     setNewTip((prev) => ({
       ...prev,
       [name]: value,
@@ -104,15 +105,16 @@ function Tips() {
   // Add or update tip
   const handleAddOrUpdateTip = async (e) => {
     e.preventDefault();
-
-    if (!uid) {
-      alert("You must be logged in to add tips.");
-      return;
-    }
     if (!newTip.Name || !newTip.Description) {
-      alert("Please fill out all fields!");
+      alert("Por favor, rellena todos los campos.");
       return;
     }
+
+    const now = Timestamp.now();
+    const twentyFourHoursAgo = new Timestamp(
+      now.seconds - 24 * 60 * 60,
+      now.nanoseconds
+    );
 
     try {
       if (editingTipId) {
@@ -122,7 +124,24 @@ function Tips() {
         });
         setEditingTipId(null);
       } else {
-        await addDoc(collection(db, "tips"), { ...newTip, Creator: uid });
+        // Get user's tips from the last 24 hours
+        const userTipsQuery = query(
+          collection(db, "tips"),
+          where("Creator", "==", uid),
+          where("createdAt", ">", twentyFourHoursAgo)
+        );
+        const userTipsSnapshot = await getDocs(userTipsQuery);
+
+        if (userTipsSnapshot.size >= 3) {
+          alert("Solo puedes crear 3 tips al día.");
+          setNewTip({ Name: "", Description: "", Creator: "" });
+          return;
+        }
+        await addDoc(collection(db, "tips"), {
+          ...newTip,
+          Creator: uid,
+          createdAt: serverTimestamp(),
+        });
       }
       setNewTip({ Name: "", Description: "", Creator: "" });
     } catch (error) {
@@ -132,6 +151,10 @@ function Tips() {
 
   // Delete a tip
   const deleteTip = async (id) => {
+    const confirmDelete = window.confirm(
+      "Estás seguro de que quieres borrar ese tip?"
+    );
+    if (!confirmDelete) return;
     try {
       // Get all comments associated with the tip
       const commentsQuery = query(
@@ -169,6 +192,8 @@ function Tips() {
   return (
     <div className="tips">
       <h1>Tips</h1>
+
+      {/* Professional Tips Section */}
       <div className="tipSection">
         <h2
           onClick={() => setShowProTips(!showProTips)}
@@ -177,9 +202,9 @@ function Tips() {
           Tips de profesionales{" "}
           {showProTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
-        {showProTips && (
-          <div className="tipCardContainer">
-            {professionalTips.map((tip) => (
+        <div className="tipCardContainer">
+          {(showProTips ? professionalTips : professionalTips.slice(0, 3)).map(
+            (tip) => (
               <div key={tip.id} className="tipCard">
                 <div className="tipCardText">
                   <h2>{tip.Name}</h2>
@@ -194,12 +219,14 @@ function Tips() {
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            )
+          )}
+        </div>
       </div>
 
       <hr width="95%" color="black" />
+
+      {/* User Tips Section */}
       <div className="tipSection">
         <h2
           onClick={() => setShowUserTips(!showUserTips)}
@@ -207,76 +234,67 @@ function Tips() {
         >
           Tips de usuarios {showUserTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
-        {showUserTips && (
-          <div className="tipCardContainer">
-            {tips.length === 0 && !uid ? (
-              <p>No tips available</p>
-            ) : (
-              tips.map((tip) => (
-                <div key={tip.id} className="tipCard">
-                  <div className="tipCardText">
-                    <h2>{tip.Name}</h2>
-                    <p>{tip.Description}</p>
-                  </div>
-
-                  <div className="tipCardButtons">
-                    {uid === tip.Creator && (
-                      <div className="creatorIcons">
-                        <button
-                          className="iconTip"
-                          onClick={() => deleteTip(tip.id)}
-                        >
-                          <MdDelete size={20} />
-                        </button>
-                        <button
-                          className="iconTip"
-                          onClick={() => editTip(tip.id)}
-                        >
-                          <MdEdit size={20} />
-                        </button>
-                      </div>
-                    )}
+        <div className="tipCardContainer">
+          {(showUserTips ? tips : tips.slice(0, uid ? 2 : 3)).map((tip) => (
+            <div key={tip.id} className="tipCard">
+              <div className="tipCardText">
+                <h2>{tip.Name}</h2>
+                <p>{tip.Description}</p>
+              </div>
+              <div className="tipCardButtons">
+                {uid === tip.Creator && (
+                  <div className="creatorIcons">
                     <button
                       className="iconTip"
-                      onClick={() => setOpenedComment(tip)}
+                      onClick={() => deleteTip(tip.id)}
                     >
-                      <MdComment size={20} />
+                      <MdDelete size={20} />
+                    </button>
+                    <button className="iconTip" onClick={() => editTip(tip.id)}>
+                      <MdEdit size={20} />
                     </button>
                   </div>
-                </div>
-              ))
-            )}
-            {uid && (
-              <div className="addTip tipCard">
-                <h2>{editingTipId ? "Edit Tip" : "Add a New Tip"}</h2>
-                <form onSubmit={handleAddOrUpdateTip} autoComplete="off">
-                  <input
-                    type="text"
-                    name="Name"
-                    placeholder="Tip Name"
-                    value={newTip.Name}
-                    maxLength={30}
-                    onChange={handleInputChange}
-                  />
-                  <textarea
-                    name="Description"
-                    placeholder="Tip Description"
-                    maxLength={150}
-                    value={newTip.Description}
-                    onChange={handleInputChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault(); // Prevents new line
-                        handleAddOrUpdateTip(e); // Submit the form
-                      }
-                    }}
-                  ></textarea>
-                </form>
+                )}
+                <button
+                  className="iconTip"
+                  onClick={() => setOpenedComment(tip)}
+                >
+                  <MdComment size={20} />
+                </button>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          ))}
+          {uid && (
+            <div className="addTip tipCard">
+              <h2>{editingTipId ? "Editar Tip" : "Añadir Tip"}</h2>
+              <form onSubmit={handleAddOrUpdateTip} autoComplete="off">
+                <input
+                  type="text"
+                  name="Name"
+                  placeholder="Título"
+                  value={newTip.Name}
+                  maxLength={30}
+                  onChange={handleInputChange}
+                />
+                <textarea
+                  name="Description"
+                  placeholder="Descripción"
+                  maxLength={150}
+                  value={newTip.Description}
+                  onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault(); // Prevents new line
+                      handleAddOrUpdateTip(e); // Submit the form
+                    }
+                  }}
+                ></textarea>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
+
       {openedComment && (
         <Comments tip={openedComment} onClose={() => setOpenedComment(null)} />
       )}
@@ -285,3 +303,34 @@ function Tips() {
 }
 
 export default Tips;
+
+// {uid && (
+//   <div className="addTip tipCard">
+//   <h2>{editingTipId ? "Edit Tip" : "Add a New Tip"}</h2>
+//   <form onSubmit={handleAddOrUpdateTip} autoComplete="off">
+//     <input
+//       type="text"
+//       name="Name"
+//       placeholder="Tip Name"
+//       value={newTip.Name}
+//       maxLength={30}
+//       onChange={handleInputChange}
+//     />
+//     <textarea
+//       name="Description"
+//       placeholder="Tip Description"
+//       maxLength={150}
+//       value={newTip.Description}
+//       onChange={handleInputChange}
+//       onKeyDown={(e) => {
+//         if (e.key === "Enter" && !e.shiftKey) {
+//           e.preventDefault(); // Prevents new line
+//           handleAddOrUpdateTip(e); // Submit the form
+//         }
+//       }}
+//     ></textarea>
+//   </form>
+// </div>
+// )}
+// </div>
+// )}

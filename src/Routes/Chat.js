@@ -19,7 +19,10 @@ function Chat() {
         </div>
       </div> */}
       {!user ? (
-        <SignIn />
+        <div id="sigInChat">
+          <p>Tienes que iniciar sesión para entrar.</p>
+          {/* <SignIn /> */}
+        </div>
       ) : (
         <>
           <ChatBox />

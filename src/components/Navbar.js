@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import * as FaIcons from "react-icons/fa";
+import { FaBars, FaHome } from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { SidebarData } from "./SidebarData";
@@ -8,6 +8,7 @@ import { IconContext } from "react-icons/lib";
 import * as IoIcons from "react-icons/io";
 import { getAuth, signOut } from "firebase/auth";
 import SignIn from "../components/SignIn";
+import { useNavigate } from "react-router-dom"; // For navigation
 
 function Navbar({ user }) {
   const [sidebar, setSidebar] = useState(false);
@@ -15,6 +16,7 @@ function Navbar({ user }) {
 
   const showSidebar = () => setSidebar(!sidebar);
   const auth = getAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -50,12 +52,27 @@ function Navbar({ user }) {
     <>
       <IconContext.Provider value={{ color: "undefined" }}>
         <div className="navbar">
-          <Link to="#" className="menu-bars">
-            <FaIcons.FaBars color="white" onClick={showSidebar} />
-          </Link>
+          <div>
+            <Link to="#" className="menu-bars">
+              <FaBars onClick={showSidebar} />
+            </Link>
+            <div
+              id="homeButtonNav"
+              className="menu-bars"
+              onClick={() => navigate("/")}
+            >
+              <FaHome />
+            </div>
+          </div>
+          <img
+            style={{ height: "30px" }}
+            id="logoNavbar"
+            src="./images/logoWhite.png"
+            alt="Logo"
+          />
           {user ? (
             <div className="logOut" onClick={handleLogout}>
-              <span>Log out</span>
+              <span>Salir</span>
               <IoIcons.IoIosLogOut />
             </div>
           ) : (

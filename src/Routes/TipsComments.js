@@ -100,30 +100,41 @@ function Comments({ tip, onClose }) {
         </button>
       </div>
       <div className="chatComments">
-        {comments
-          .filter((comment) => comment.tipId === tip.id)
-          .map((comment) => (
-            <p
-              key={comment.id}
-              className={`comment-bubble ${
-                comment.uid === uid ? "right-comment" : ""
-              }`}
-            >
-              {comment.text}
-            </p>
-          ))}
+        {comments.filter((comment) => comment.tipId === tip.id).length === 0 ? (
+          <p id="noCommentsText">No hay comentarios</p>
+        ) : (
+          comments
+            .filter((comment) => comment.tipId === tip.id)
+            .map((comment) => (
+              <p
+                key={comment.id}
+                className={`comment-bubble ${
+                  comment.uid === uid ? "right-comment" : ""
+                }`}
+              >
+                {comment.text}
+              </p>
+            ))
+        )}
         <div ref={scroll}></div>
       </div>
-      <form onSubmit={sendComment} className="commentInput" autoComplete="off">
-        <input
-          ref={commentInputRef}
-          onChange={(e) => setNewComment(e.target.value)}
-          value={newComment}
-        />
-        <button type="submit" id="sendComment">
-          <FaCircleArrowUp />
-        </button>
-      </form>
+      {uid && (
+        <form
+          onSubmit={sendComment}
+          className="commentInput"
+          autoComplete="off"
+        >
+          <input
+            ref={commentInputRef}
+            onChange={(e) => setNewComment(e.target.value)}
+            value={newComment}
+            placeholder="Escribe tu comentario..."
+          />
+          <button type="submit" id="sendComment">
+            <FaCircleArrowUp />
+          </button>
+        </form>
+      )}
     </div>
   );
 }

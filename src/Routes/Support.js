@@ -166,7 +166,12 @@ function Support() {
             </div>
             <div className="field">
               <label htmlFor="foto">Foto</label>
-              <input id="foto" type="file" onChange={handleFileChange} />
+              <input
+                id="foto"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
             </div>
             <div className="field">
               <label htmlFor="description">Descripción</label>
@@ -174,6 +179,7 @@ function Support() {
                 id="description"
                 value={formData.description}
                 onChange={handleChange}
+                maxLength={160}
                 required
               />
             </div>

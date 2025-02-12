@@ -23,16 +23,17 @@ export const SidebarData = [
     icon: <FaIcons.FaLightbulb />,
     cName: "nav-text",
   },
+
+  {
+    title: "Asistante IA",
+    path: "/assistant",
+    icon: <RiRobot3Fill />,
+    cName: "nav-text",
+  },
   {
     title: "Ayuda",
     path: "/support",
     icon: <IoIcons.IoMdHelpCircle />,
-    cName: "nav-text",
-  },
-  {
-    title: "Asistante",
-    path: "/assistant",
-    icon: <RiRobot3Fill />,
     cName: "nav-text",
   },
 ];

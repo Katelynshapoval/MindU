@@ -105,9 +105,10 @@ body {
 
 .field textarea {
   max-width: 500px;
+  min-width: 500px;
   width: 500px;
   min-height: 100px;
-  max-height: 300px;
+  max-height: 200px;
 }
 
 .formHeader {

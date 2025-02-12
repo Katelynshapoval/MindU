@@ -1,22 +1,48 @@
-import React, { useEffect, useRef, useState } from "react";
+import { React, useEffect, useRef, useState } from "react";
 import {
   query,
   collection,
   orderBy,
   onSnapshot,
   limit,
+  doc,
+  setDoc,
+  getDoc,
 } from "firebase/firestore";
-import { db } from "../firebase/firebase.js";
+import { db, auth } from "../firebase/firebase.js";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]); // State to hold the list of messages
   const [editMessageData, setEditMessageData] = useState(null); // State for the message being edited
-  const [nickname, setNickname] = useState(
-    localStorage.getItem("nickname") || "Anonymous"
-  ); // Default to "Anonymous"
+  const [nickname, setNickname] = useState("Anonymous"); // Default to "Anonymous"
   const scroll = useRef(); // Reference to scroll to the bottom of the chat
+  const [uid, setUid] = useState(null);
+
+  // Authentication state
+  useEffect(() => {
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setUid(user ? user.uid : null);
+      if (user) {
+        // Fetch the nickname from Firestore when user logs in
+        fetchNickname(user.uid);
+      }
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Fetch nickname from Firestore
+  const fetchNickname = async (userUid) => {
+    const nicknameDocRef = doc(db, "nicknames", userUid);
+    const nicknameDoc = await getDoc(nicknameDocRef);
+    if (nicknameDoc.exists()) {
+      setNickname(nicknameDoc.data().nickname);
+    } else {
+      setNickname("Anonymous"); // Set to "Anonymous" if no nickname found
+      await setDoc(nicknameDocRef, { nickname: "Anonymous" }); // Create entry in Firestore
+    }
+  };
 
   // Query to fetch messages ordered by creation time, limiting to 50
   useEffect(() => {
@@ -57,12 +83,19 @@ const ChatBox = () => {
     setNickname(e.target.value); // Update nickname state
   };
 
-  // Save nickname to localStorage when "Enter" is pressed
-  const handleNicknameKeyPress = (e) => {
+  // Save nickname to Firestore when "Enter" is pressed
+  const handleNicknameKeyPress = async (e) => {
     if (e.key === "Enter" && nickname.trim() !== "") {
       e.preventDefault(); // Prevent form submission
-      localStorage.setItem("nickname", nickname); // Save nickname to localStorage
-      alert(`Tu nombre ha sido cambiado a ${e.target.value}.`);
+
+      // Update nickname in Firestore for the user
+      const nicknameDocRef = doc(db, "nicknames", uid);
+      await setDoc(nicknameDocRef, { nickname }, { merge: true });
+
+      // Save nickname to localStorage for persistence
+      localStorage.setItem("nickname", nickname);
+
+      alert(`Tu nombre ha sido cambiado a ${nickname}.`);
     }
   };
 

@@ -46,7 +46,24 @@
   margin-left: 2rem;
   font-size: 2rem;
   background: none;
-  color: #000;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.menu-bars:hover {
+  color: #c6e4cb;
+}
+
+#homeButtonNav {
+  border: none;
+  background-color: transparent;
+  display: inline;
+}
+
+#logoNavbar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Nav Menu */
@@ -119,6 +136,7 @@
   margin-right: 10px;
   /* padding-right: 14px; */
   margin-left: 0px;
+  color: black;
 }
 
 #crossSidebar:hover {

@@ -31,6 +31,13 @@ body {
   padding: 30px 0 40px;
 }
 
+#sigInChat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .chat-box {
   display: flex;
   flex-direction: column;
@@ -54,16 +61,36 @@ body {
   transform: translate(-50%, -50%);
   background-color: white;
   width: 400px;
-  height: 100px;
+  height: 150px;
   border: 1px solid black;
   padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  border-radius: 10px;
+  box-shadow: rgba(234, 47, 47, 0.777) 0px 5px 15px;
   text-align: center;
   gap: 20px;
   z-index: 5;
+  font-size: 20px;
+}
+
+.warning-div a {
+  text-decoration: none;
+  color: red;
+}
+
+.warning-div button {
+  padding: 6px;
+  width: 70px;
+  border: 1px solid black;
+  background-color: rgb(255, 255, 255);
+  transition: all 0.2s ease-in-out;
+}
+
+.warning-div button:hover {
+  background-color: rgba(213, 128, 128, 0.397);
 }
 
 .messages-wrapper {
@@ -161,6 +188,10 @@ body {
   border: none;
   border-radius: 30px;
   outline: none;
+}
+
+#userInput {
+  padding-right: 70px;
 }
 
 /* Submit Button */

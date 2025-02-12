@@ -143,6 +143,7 @@ function Assistant() {
               id="userInput"
               placeholder="Enter your prompt"
               autoComplete="off"
+              maxLength={300}
               value={value} // Bind the value of input to the state
               onChange={(e) => setValue(e.target.value)} // Update state on change
               onKeyDown={(e) => {

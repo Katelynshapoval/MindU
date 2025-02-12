@@ -91,6 +91,10 @@ function Tips() {
   // Handle tip input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    // if (value.length > 10) {
+    //   alert("fuck offf");
+    //   return;
+    // }
     setNewTip((prev) => ({
       ...prev,
       [name]: value,
@@ -170,7 +174,7 @@ function Tips() {
           onClick={() => setShowProTips(!showProTips)}
           className="dropdownTitle"
         >
-          Tips by professionals{" "}
+          Tips de profesionales{" "}
           {showProTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
         {showProTips && (
@@ -201,7 +205,7 @@ function Tips() {
           onClick={() => setShowUserTips(!showUserTips)}
           className="dropdownTitle"
         >
-          Tips by users {showUserTips ? <FaCaretDown /> : <FaCaretRight />}
+          Tips de usuarios {showUserTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
         {showUserTips && (
           <div className="tipCardContainer">
@@ -251,13 +255,21 @@ function Tips() {
                     name="Name"
                     placeholder="Tip Name"
                     value={newTip.Name}
+                    maxLength={30}
                     onChange={handleInputChange}
                   />
                   <textarea
                     name="Description"
                     placeholder="Tip Description"
+                    maxLength={150}
                     value={newTip.Description}
                     onChange={handleInputChange}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault(); // Prevents new line
+                        handleAddOrUpdateTip(e); // Submit the form
+                      }
+                    }}
                   ></textarea>
                 </form>
               </div>

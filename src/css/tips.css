@@ -80,13 +80,20 @@ body {
   display: flex;
   flex-direction: column;
   flex-grow: 1; /* Allow this container to take available space */
+  gap: 45px;
 }
 
 .tipCard .tipCardText p {
+  display: flex;
+  justify-content: center;
   flex-grow: 1;
+}
+
+.tipCard .tipCardText h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 20%;
 }
 
 .iconTip {

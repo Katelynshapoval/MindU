@@ -63,35 +63,62 @@ function Home() {
         <h2>¿Cómo funciona?</h2>
         <div className="features">
           <div className="feature-card chatCard">
+            <img
+              src="./images/functionality/chat.png"
+              className="functionalityImage"
+            />
             <div className="overlay">
               <h3>Chat Anónimo</h3>
               <p>Comparte tus pensamientos sin preocuparte por tu identidad.</p>
-              <button onClick={() => navigate("/chat")}>Ir al chat</button>
+              <button
+                className="redirectFunctionality"
+                onClick={() => navigate("/chat")}
+              >
+                Ir al chat
+              </button>
             </div>
           </div>
           <div className="feature-card tipsCard">
+            <img
+              src="./images/functionality/tips.jpg"
+              className="functionalityImage"
+            />
             <div className="overlay">
               <h3>Consejos de Bienestar</h3>
               <p>Descubre estrategias de profesionales y usuarios.</p>
-              <button onClick={() => navigate("/tips")}>
+              <button
+                className="redirectFunctionality"
+                onClick={() => navigate("/tips")}
+              >
                 Explorar consejos
               </button>
             </div>
           </div>
           <div className="feature-card aiCard">
+            <img
+              src="./images/functionality/assistant.png"
+              className="functionalityImage"
+            />
             <div className="overlay">
-              <h3>Asistente AI</h3>
+              <h3>Asistente IA</h3>
               <p>Habla con una IA para recibir apoyo adicional.</p>
-              <button onClick={() => navigate("/assistant")}>
-                Hablar con AI
+              <button
+                className="redirectFunctionality"
+                onClick={() => navigate("/assistant")}
+              >
+                Hablar con IA
               </button>
             </div>
           </div>
           <div className="feature-card articlesCard">
+            <img
+              src="./images/functionality/articles.jpg"
+              className="functionalityImage"
+            />
             <div className="overlay">
               <h3>Artículos de Salud Mental</h3>
               <p>Aprende más sobre el bienestar emocional.</p>
-              <button>
+              <button className="redirectFunctionality">
                 <a id="articlesLink" href="#articlesContainer">
                   Ver artículos
                 </a>
@@ -123,7 +150,12 @@ function Home() {
             <div key={index} className="article-card">
               <h3>{article.title}</h3>
               <p>{article.description}</p>
-              <a href={article.link} target="_blank" rel="noopener noreferrer">
+              <a
+                className="readArticle"
+                href={article.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Leer más
               </a>
             </div>

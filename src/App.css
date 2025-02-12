@@ -16,6 +16,23 @@
   src: url("fonts/Arial-Rounded-Light.ttf");
 }
 
+.home::-webkit-scrollbar,
+.tips::-webkit-scrollbar {
+  width: 12px;
+}
+
+.home::-webkit-scrollbar-track,
+.tips::-webkit-scrollbar-track {
+  background-color: #e4e4e4;
+  border-radius: 100px;
+}
+
+.home::-webkit-scrollbar-thumb,
+.tips::-webkit-scrollbar-thumb {
+  background-color: #88ab8e;
+  border-radius: 100px;
+}
+
 /* Navbar */
 .navbar {
   background-color: #1a1a19;

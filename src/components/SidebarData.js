@@ -6,7 +6,7 @@ import { RiRobot3Fill } from "react-icons/ri";
 
 export const SidebarData = [
   {
-    title: "Home",
+    title: "Inicio",
     path: "/",
     icon: <AiIcons.AiFillHome />,
     cName: "nav-text",
@@ -24,13 +24,13 @@ export const SidebarData = [
     cName: "nav-text",
   },
   {
-    title: "Support",
+    title: "Ayuda",
     path: "/support",
     icon: <IoIcons.IoMdHelpCircle />,
     cName: "nav-text",
   },
   {
-    title: "Assistant",
+    title: "Asistante",
     path: "/assistant",
     icon: <RiRobot3Fill />,
     cName: "nav-text",

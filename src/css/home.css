@@ -82,6 +82,11 @@ body {
   padding: 20px;
 }
 
+#functionalityLink {
+  text-decoration: none;
+  color: white;
+}
+
 .features {
   display: flex;
   justify-content: center;
@@ -96,26 +101,47 @@ body {
   background-size: cover;
   background-position: center;
   display: flex;
-  align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 10px;
-  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.redirectFunctionality {
+  padding: 10px;
+  width: 150px;
+  background-color: #627560;
+  border: none;
+  color: white;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.redirectFunctionality:hover {
+  background-color: #d0e7d2;
+  color: black;
+}
+
+.redirectFunctionality a {
+  text-decoration: none;
+  color: white;
+  transition: color 0.2s ease-in-out;
+}
+
+.redirectFunctionality:hover a {
+  color: black;
 }
 
 .overlay {
-  background: rgba(0, 0, 0, 0.384);
-  color: white;
-  height: 150px;
+  background: #9aad986b;
+  color: rgb(0, 0, 0);
   padding: 15px;
   text-align: center;
-  border-radius: 10px;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
 .home h2 {
@@ -130,31 +156,8 @@ body {
   font-size: 14px;
 }
 
-/* Background images for each card */
-.chatCard {
-  background-image: url("../../public/images/functionality/chat.png");
-}
-
-.tipsCard {
-  background-image: url("../../public/images/functionality/tips.jpg");
-}
-
-.aiCard {
-  background-image: url("../../public/images/functionality/assistant.png");
-}
-
-.articlesCard {
-  background-image: url("../../public/images/functionality/articles.jpg");
-}
-
-#articlesLink,
-#functionalityLink {
-  text-decoration: none;
-  color: black;
-}
-
-#functionalityLink {
-  color: white;
+.functionalityImage {
+  height: 150px;
 }
 
 #homeHr {
@@ -212,4 +215,50 @@ body {
 .article-card a {
   list-style: none;
   color: black;
+}
+.readArticle {
+  position: relative;
+  text-decoration: none;
+  width: 80px;
+}
+
+/* Underline Animation */
+.readArticle::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1px;
+  bottom: -5px;
+  left: 0;
+  background-color: #000000;
+  transition: transform 0.25s ease-out;
+}
+
+.readArticle:hover::after {
+  transform: scaleX(1);
+}
+
+.readArticle.left::after {
+  transform-origin: bottom right;
+}
+
+.readArticle.left:hover::after {
+  transform-origin: bottom left;
+}
+
+.readArticle.center::after {
+  transform-origin: bottom center;
+}
+
+.readArticle.center:hover::after {
+  transform-origin: bottom center;
+}
+
+.readArticle.right::after {
+  transform-origin: bottom left;
+}
+
+.readArticle.right:hover::after {
+  transform-origin: bottom right;
 }

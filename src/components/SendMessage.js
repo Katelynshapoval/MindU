@@ -33,8 +33,18 @@ const SendMessage = ({
     "tristeza",
     "desesperacion",
     "deseo de morir",
+    "La vida no merece la pena",
+    "sufrir",
+    "Estoy cansado de luchar",
+    "terminar",
+    "carga",
+    "no puedo más",
+    "infierno",
+    "Oigo voces que me dicen 'hazlo'",
+    "demonios",
+    "cobarde",
+    "cuchillo",
   ];
-
   // If there is an edit message data, pre-fill the input field
   useEffect(() => {
     if (editMessageData) {

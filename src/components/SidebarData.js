@@ -30,6 +30,13 @@ export const SidebarData = [
     icon: <RiRobot3Fill />,
     cName: "nav-text",
   },
+
+  {
+    title: "Propuestas",
+    path: "/proposals",
+    icon: <FaIcons.FaStar />,
+    cName: "nav-text",
+  },
   {
     title: "Ayuda",
     path: "/support",

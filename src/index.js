@@ -7,6 +7,7 @@ import Home from "./Routes/Home";
 import Chat from "./Routes/Chat";
 import Support from "./Routes/Support";
 import Assistant from "./Routes/Assistant";
+import Proposals from "./Routes/Proposals";
 import App from "./App"; // Import App.js here
 
 // Define the router configuration
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "assistant",
         element: <Assistant />,
+      },
+      {
+        path: "proposals",
+        element: <Proposals />,
       },
     ],
   },

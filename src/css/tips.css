@@ -135,8 +135,8 @@ body {
   max-height: 60%;
 }
 
-input,
-textarea {
+#inputTip,
+#textareaTip {
   padding: 6px 12px;
   font-size: 16px;
   font-weight: 400;
@@ -150,8 +150,8 @@ textarea {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-input:focus,
-textarea:focus {
+#inputTip:focus,
+#textareaTip:focus {
   color: #212529;
   background-color: #fff;
   border-color: #88ab8e;

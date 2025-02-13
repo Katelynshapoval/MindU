@@ -275,6 +275,7 @@ function Tips() {
                   value={newTip.Name}
                   maxLength={30}
                   onChange={handleInputChange}
+                  id="inputTip"
                 />
                 <textarea
                   name="Description"
@@ -288,6 +289,7 @@ function Tips() {
                       handleAddOrUpdateTip(e); // Submit the form
                     }
                   }}
+                  id="textareaTip"
                 ></textarea>
               </form>
             </div>

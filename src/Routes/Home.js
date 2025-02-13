@@ -44,7 +44,7 @@ function Home() {
     <div className="home">
       {/* Header Section */}
       <div id="headerHome">
-        <img src="./images/logoooo.png" alt="Logo" />
+        <img src="./images/logos/headWhiteTransparent.png" alt="Logo" />
         <h1>EMPIEZA A CUIDAR TU SALUD MENTAL</h1>
         <p>
           Una aplicación innovadora que integra tecnología y psicología para
@@ -100,8 +100,8 @@ function Home() {
               className="functionalityImage"
             />
             <div className="overlay">
-              <h3>Asistente IA</h3>
-              <p>Habla con una IA para recibir apoyo adicional.</p>
+              <h3>Anima - Tu asistente IA</h3>
+              <p>Habla con Anima y recibe apoyo de una IA amigable.</p>
               <button
                 className="redirectFunctionality"
                 onClick={() => navigate("/assistant")}

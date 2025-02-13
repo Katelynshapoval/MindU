@@ -114,7 +114,7 @@ function Assistant() {
 
   return (
     <div className="assistant">
-      <section className="side-bar-assistant">
+      {/* <section className="side-bar-assistant">
         <button id="newChat" onClick={createNewChat}>
           New chat
         </button>
@@ -125,13 +125,17 @@ function Assistant() {
             </li>
           ))}
         </ul>
-      </section>
+      </section> */}
       <section className="main">
-        {!currentTitle && <h1 style={{ color: "#000000" }}>Welcome!</h1>}
+        {!currentTitle && (
+          <h1 style={{ color: "#000000" }}>¡Hola, soy Anima!</h1>
+        )}
         <ul className="feed">
           {currentChat?.map((chatMessage, index) => (
             <li key={index}>
-              <p className="role">{chatMessage.role}</p>
+              <p className="role">
+                {chatMessage.role === "user" ? "Tú" : "Anima"}
+              </p>
               <p>{chatMessage.content}</p>
             </li>
           ))}
@@ -141,7 +145,7 @@ function Assistant() {
           <div className="inputContainer">
             <input
               id="userInput"
-              placeholder="Enter your prompt"
+              placeholder="¿Cómo te sientes hoy?"
               autoComplete="off"
               maxLength={300}
               value={value} // Bind the value of input to the state

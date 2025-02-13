@@ -67,7 +67,7 @@ function Navbar({ user }) {
           <img
             style={{ height: "30px" }}
             id="logoNavbar"
-            src="./images/logoWhite.png"
+            src="./images/logos/textWhite.png"
             alt="Logo"
           />
           {user ? (
@@ -89,7 +89,11 @@ function Navbar({ user }) {
               <Link to="#" className="menu-bars">
                 <AiIcons.AiOutlineClose id="crossSidebar" />
               </Link>
-              <img id="logoSidebar" src="./images/logo.png" alt="Logo" />
+              <img
+                id="logoSidebar"
+                src="./images/logos/textBlack.png"
+                alt="Logo"
+              />
             </li>
             {SidebarData.map((item, index) => {
               return (

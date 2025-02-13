@@ -13,14 +13,25 @@ let conversationHistory = [];
 app.post("/completions", async (req, res) => {
   const userMessage = req.body.message;
 
-  // Add the new user message to the conversation history
-  conversationHistory.push({ role: "user", content: userMessage });
+  // Ensure system message is always at the start
+  const systemMessage = {
+    role: "system",
+    content:
+      "Eres un terapeuta amigable y comprensivo. Hablas de manera relajada y cercana, como un amigo de confianza, pero con conocimiento en salud mental. Escuchas con atención, haces preguntas útiles y das consejos prácticos sin sonar demasiado formal. Tu objetivo es ayudar con empatía y buen ánimo.",
+  };
+
+  // Merge system message with conversation history
+  const messages = [
+    systemMessage,
+    ...conversationHistory,
+    { role: "user", content: userMessage },
+  ];
 
   const options = {
     method: "POST",
     body: JSON.stringify({
       model: "gpt-3.5-turbo",
-      messages: conversationHistory, // Send entire conversation history to OpenAI API
+      messages: messages,
       max_tokens: 100,
     }),
     headers: {
@@ -36,17 +47,21 @@ app.post("/completions", async (req, res) => {
     );
     const data = await response.json();
 
-    // Add the assistant's response to the conversation history
-    const assistantMessage = data.choices[0].message;
+    // Add user and assistant messages to the conversation history
+    conversationHistory.push({ role: "user", content: userMessage });
     conversationHistory.push({
       role: "assistant",
-      content: assistantMessage.content,
+      content: data.choices[0].message.content,
     });
 
-    // Send the assistant's response back to the client
+    // Keep history size manageable (e.g., last 10 messages)
+    if (conversationHistory.length > 20) {
+      conversationHistory = conversationHistory.slice(-20);
+    }
+
     res.send(data);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send("Error communicating with OpenAI API.");
   }
 });

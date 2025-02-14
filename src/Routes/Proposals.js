@@ -10,7 +10,9 @@ import {
 } from "firebase/firestore"; // Firestore methods
 import { AiOutlineClose } from "react-icons/ai"; // Import close icon
 import "../css/proposals.css";
-import PieChart from "../components/PieChart";
+import SentimentSchoolPieChart from "../components/SentimentSchoolPieChart"; // Import sentiment and school pie chart
+import ResourcesBarChart from "../components/ResourcesBarChart"; // Import resources pie chart
+import { fetchFeedbackData } from "../components/processData"; // import the fetch function
 
 function Proposals() {
   const [schoolType, setSchoolType] = useState("");
@@ -25,6 +27,7 @@ function Proposals() {
   const [feedbackData, setFeedbackData] = useState([]);
   const formRef = useRef(null);
 
+  // Fetching data from Firebase
   // Fetching data from Firebase
   useEffect(() => {
     const fetchFeedbackData = async () => {
@@ -144,8 +147,21 @@ function Proposals() {
       </p>
 
       {/* PieChart wrapped in a container with specific size */}
-      <div className="pieChartContainer">
-        <PieChart feedbackData={feedbackData} />
+      {/* Render both pie charts */}
+      <div className="chartsContainer">
+        <p>hola</p>
+        <div class="sentimentsContainer chartContainer">
+          <div className="chart" id="sentimentsChart">
+            <SentimentSchoolPieChart feedbackData={feedbackData} />
+          </div>
+        </div>
+        <div class="resourcesContainer chartContainer">
+          <p>hola</p>
+
+          <div className="chart">
+            <ResourcesBarChart feedbackData={feedbackData} />
+          </div>
+        </div>
       </div>
 
       {!showForm ? (

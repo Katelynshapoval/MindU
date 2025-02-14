@@ -16,7 +16,7 @@ import {
 import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import "../css/tips.css";
 import Comments from "./TipsComments";
-import { FaCaretDown, FaCaretRight } from "react-icons/fa";
+import { FaCaretDown, FaCaretRight, FaHeart } from "react-icons/fa";
 import { Timestamp } from "firebase/firestore";
 
 function Tips() {

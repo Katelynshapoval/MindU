@@ -90,9 +90,9 @@ const PieChart = ({ feedbackData }) => {
 
   return (
     <div className="chart-container">
-      <h2 style={{ textAlign: "center" }}>
+      {/* <h2 style={{ textAlign: "center" }}>
         Distribución por Sentimiento y Tipo de Escuela
-      </h2>
+      </h2> */}
       <Pie
         data={chartData}
         options={{
@@ -108,6 +108,13 @@ const PieChart = ({ feedbackData }) => {
             title: {
               display: true,
               text: "Número total de respuestas por sentimiento y tipo de escuela",
+            },
+            legend: {
+              position: "right", // Move the legend to the right of the pie chart
+              labels: {
+                boxWidth: 20, // Adjust the size of the label box
+                padding: 10, // Adjust the padding around the label
+              },
             },
           },
         }}

@@ -14,25 +14,76 @@
   height: 90vh;
   gap: 20px;
   padding: 30px 0 40px;
+  overflow-y: scroll;
 }
 
-.pieChartContainer {
-  width: 100%;
-  max-width: 600px; /* Optional: set max width */
-  height: 400px; /* Set the height to 400px as per your request */
+.chartsContainer {
   margin: 20px auto; /* Center the chart horizontally */
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  width: 30%;
+}
+
+/* a */
+.chartContainer {
+  display: flex;
+  align-items: center; /* Centers content vertically */
+  justify-content: center; /* Centers content horizontally */
+  width: 100%;
+  padding: 20px;
+}
+
+.sentimentsContainer {
+  width: 80%; /* Adjust width as needed */
+  max-width: 900px; /* Prevent it from getting too large */
+  display: flex;
+  justify-content: space-between; /* Ensures even spacing */
+  align-items: center; /* Centers vertically */
+  gap: 20px; /* Adds space between chart and text */
+}
+
+.chart {
+  flex: 1; /* Makes the chart take up 50% */
+  display: flex;
+  justify-content: center; /* Centers chart */
   align-items: center;
 }
 
+.chartText {
+  flex: 1; /* Makes text take up 50% */
+  text-align: center; /* Centers text inside */
+  font-size: 18px;
+}
+
+/* .pieChartContainer #sentimentos {
+  width: 315px;
+} */
+/* .pieChartContainer #resources {
+  width: 525px;
+  height: 402px;
+} */
 .chart-container {
-  height: 400px;
+  width: 100%;
   display: flex;
+  height: 300px;
+  flex-direction: column;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: static;
+}
+
+.chart {
+  width: 500px;
 }
 
 /* Form Container */

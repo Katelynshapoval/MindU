@@ -125,6 +125,22 @@ function Home() {
               </button>
             </div>
           </div>
+          <div className="feature-card proposalsCard">
+            <img
+              src="./images/functionality/proposals.png"
+              className="functionalityImage"
+            />
+            <div className="overlay">
+              <h3>Mejora y Opinión</h3>
+              <p>Comparte tus ideas y ayuda a generar cambios.</p>
+              <button
+                className="redirectFunctionality"
+                onClick={() => navigate("/proposals")}
+              >
+                Responder preguntas
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <hr id="homeHr" />

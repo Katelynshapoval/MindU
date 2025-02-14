@@ -90,6 +90,8 @@ body {
 .features {
   display: flex;
   justify-content: center;
+  /* max-width: 50%; */
+  margin: 0 auto;
   flex-wrap: wrap;
   align-items: center;
   gap: 100px;
@@ -160,6 +162,11 @@ body {
 
 .functionalityImage {
   height: 150px;
+}
+
+.proposalsCard img {
+  height: 100px;
+  margin-top: 20px;
 }
 
 #homeHr {

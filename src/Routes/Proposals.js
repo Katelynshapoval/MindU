@@ -10,9 +10,9 @@ import {
 } from "firebase/firestore"; // Firestore methods
 import { AiOutlineClose } from "react-icons/ai"; // Import close icon
 import "../css/proposals.css";
+import PieChart from "../components/PieChart";
 
 function Proposals() {
-  // States
   const [schoolType, setSchoolType] = useState("");
   const [feedback, setFeedback] = useState("");
   const [resources, setResources] = useState([]);
@@ -22,10 +22,28 @@ function Proposals() {
   const [error, setError] = useState("");
   const [hasSubmittedToday, setHasSubmittedToday] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [feedbackData, setFeedbackData] = useState([]);
+  const formRef = useRef(null);
 
-  const formRef = useRef(null); // Reference for form detection
+  // Fetching data from Firebase
+  useEffect(() => {
+    const fetchFeedbackData = async () => {
+      try {
+        // Get the collection "feedback" from Firestore
+        const q = query(collection(db, "feedback"));
+        const querySnapshot = await getDocs(q);
 
-  // Function to check if the user has already submitted today
+        // Store the fetched data in the state
+        const data = querySnapshot.docs.map((doc) => doc.data());
+        setFeedbackData(data);
+      } catch (error) {
+        console.error("Error fetching feedback data:", error);
+      }
+    };
+
+    fetchFeedbackData();
+  }, []); // Empty dependency array to run only once on component mount
+
   const checkIfSubmittedToday = async () => {
     try {
       const userId = "unique_user_id"; // Replace with actual user identification
@@ -55,7 +73,6 @@ function Proposals() {
     checkIfSubmittedToday();
   }, []);
 
-  // Handle clicks outside the form
   const handleClickOutside = (event) => {
     if (formRef.current && !formRef.current.contains(event.target)) {
       setShowForm(false);
@@ -71,7 +88,6 @@ function Proposals() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showForm]);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -121,7 +137,16 @@ function Proposals() {
 
   return (
     <div className="proposals">
-      <h2>Mejora la concienciación sobre la salud mental</h2>
+      <h2>Propuestas de Mejora </h2>
+      <p>
+        Comparte tus ideas para mejorar el bienestar emocional en distintos
+        ámbitos. Tu voz puede marcar la diferencia.
+      </p>
+
+      {/* PieChart wrapped in a container with specific size */}
+      <div className="pieChartContainer">
+        <PieChart feedbackData={feedbackData} />
+      </div>
 
       {!showForm ? (
         hasSubmittedToday ? (
@@ -135,137 +160,127 @@ function Proposals() {
           </button>
         )
       ) : (
-        <div className="formContainer">
-          <div ref={formRef} className="formWrapper">
-            <form onSubmit={handleSubmit} className="proposalForm">
-              {error && <p className="formError">{error}</p>}
-              <div className="formHeader">
-                <p>Formulario</p>
-                <button
-                  className="closeButtonProposals"
-                  id="closeForm"
-                  onClick={() => setShowForm(false)}
-                >
-                  <AiOutlineClose />
-                </button>
-              </div>
-
-              <div className="formField">
-                <label htmlFor="schoolType">
-                  ¿A qué tipo de institución asistes?
-                </label>
-                <select
-                  id="schoolType"
-                  value={schoolType}
-                  onChange={(e) => setSchoolType(e.target.value)}
-                  required
-                >
-                  <option value="" disabled>
-                    Selecciona...
-                  </option>
-                  <option value="Secundaria">Secundaria</option>
-                  <option value="Bachillerato">Bachillerato</option>
-                  <option value="Universidad">Universidad</option>
-                  <option value="Formación técnica/profesional">
-                    Formación técnica/profesional
-                  </option>
-                </select>
-              </div>
-
-              <div className="formField">
-                <label htmlFor="feedback">
-                  ¿Qué mejorarías para hablar más sobre salud mental?
-                </label>
-                <textarea
-                  id="feedback"
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  required
-                ></textarea>
-              </div>
-
-              <div className="formField">
-                <label>¿Qué recursos crees que necesitamos?</label>
-                <div className="checkboxGroup">
-                  {[
-                    "Más talleres",
-                    "Acceso a profesionales",
-                    "Espacios seguros",
-                    "Material educativo",
-                    "Otro",
-                  ].map((resource) => (
-                    <div className="checkbox-wrapper-1" key={resource}>
-                      <input
-                        id={`checkbox-${resource}`}
-                        type="checkbox"
-                        value={resource}
-                        className="substituted"
-                        checked={resources.includes(resource)}
-                        onChange={(e) =>
-                          setResources(
-                            e.target.checked
-                              ? [...resources, resource]
-                              : resources.filter((r) => r !== resource)
-                          )
-                        }
-                        aria-hidden="true"
-                      />
-                      <label
-                        className="checkboxLabel"
-                        htmlFor={`checkbox-${resource}`}
-                      >
-                        {resource}
-                      </label>
-                    </div>
-                  ))}
-                  {resources.includes("Otro") && (
-                    <input
-                      type="text"
-                      placeholder="Especifica"
-                      value={otherResources}
-                      onChange={(e) => setOtherResources(e.target.value)}
-                      className="otherInput"
-                    />
-                  )}
-                </div>
-              </div>
-
-              <div className="formField">
-                <label htmlFor="sentiment">
-                  ¿Qué piensas sobre la concienciación de la salud mental en tu
-                  institución?
-                </label>
-                <select
-                  id="sentiment"
-                  value={sentiment}
-                  onChange={(e) => setSentiment(e.target.value)}
-                  required
-                >
-                  <option value="">Selecciona...</option>
-                  <option value="Malo">Malo</option>
-                  <option value="Regular">Regular</option>
-                  <option value="Bueno">Bueno</option>
-                  <option value="Excelente">Excelente</option>
-                </select>
-              </div>
-
-              <div className="formField">
-                <label htmlFor="extraComments">
-                  ¿Tienes algún comentario adicional?
-                </label>
-                <textarea
-                  id="extraComments"
-                  value={extraComments}
-                  onChange={(e) => setExtraComments(e.target.value)}
-                ></textarea>
-              </div>
-
-              <button id="submitProposal" type="submit">
-                Enviar
-              </button>
-            </form>
+        <form ref={formRef} onSubmit={handleSubmit} className="proposalForm">
+          {error && <p className="formError">{error}</p>}
+          <div className="formHeader">
+            <p>Formulario</p>
+            <button
+              className="closeButtonProposals"
+              id="closeForm"
+              onClick={() => setShowForm(false)}
+            >
+              <AiOutlineClose />
+            </button>
           </div>
-        </div>
+          <div className="formField">
+            <label htmlFor="schoolType">
+              ¿A qué tipo de institución asistes?
+            </label>
+            <select
+              id="schoolType"
+              value={schoolType}
+              onChange={(e) => setSchoolType(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Selecciona...
+              </option>
+              <option value="Secundaria">Secundaria</option>
+              <option value="Bachillerato">Bachillerato</option>
+              <option value="Universidad">Universidad</option>
+              <option value="Formación técnica/profesional">
+                Formación técnica/profesional
+              </option>
+            </select>
+          </div>
+          <div className="formField">
+            <label htmlFor="feedback">
+              ¿Qué mejorarías para hablar más sobre salud mental?
+            </label>
+            <textarea
+              id="feedback"
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              required
+            ></textarea>
+          </div>
+          <div className="formField">
+            <label>¿Qué recursos crees que necesitamos?</label>
+            <div className="checkboxGroup">
+              {[
+                "Más talleres",
+                "Acceso a profesionales",
+                "Espacios seguros",
+                "Material educativo",
+                "Otro",
+              ].map((resource) => (
+                <div className="checkbox-wrapper-1" key={resource}>
+                  <input
+                    id={`checkbox-${resource}`}
+                    type="checkbox"
+                    value={resource}
+                    className="substituted"
+                    checked={resources.includes(resource)}
+                    onChange={(e) =>
+                      setResources(
+                        e.target.checked
+                          ? [...resources, resource]
+                          : resources.filter((r) => r !== resource)
+                      )
+                    }
+                    aria-hidden="true"
+                  />
+                  <label
+                    className="checkboxLabel"
+                    htmlFor={`checkbox-${resource}`}
+                  >
+                    {resource}
+                  </label>
+                </div>
+              ))}
+              {resources.includes("Otro") && (
+                <input
+                  type="text"
+                  placeholder="Especifica"
+                  value={otherResources}
+                  onChange={(e) => setOtherResources(e.target.value)}
+                  className="otherInput"
+                />
+              )}
+            </div>
+          </div>
+          <div className="formField">
+            <label htmlFor="sentiment">
+              ¿Qué piensas sobre la concienciación de la salud mental en tu
+              institución?
+            </label>
+            <select
+              id="sentiment"
+              value={sentiment}
+              onChange={(e) => setSentiment(e.target.value)}
+              required
+            >
+              <option value="">Selecciona...</option>
+              <option value="Malo">Malo</option>
+              <option value="Regular">Regular</option>
+              <option value="Bueno">Bueno</option>
+              <option value="Excelente">Excelente</option>
+            </select>
+          </div>
+          <div className="formField">
+            <label htmlFor="extraComments">
+              ¿Tienes algún comentario adicional?
+            </label>
+            <textarea
+              id="extraComments"
+              value={extraComments}
+              onChange={(e) => setExtraComments(e.target.value)}
+            ></textarea>
+          </div>
+          <button id="submitProposal" type="submit">
+            Enviar
+          </button>
+        </form>
       )}
     </div>
   );

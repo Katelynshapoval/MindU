@@ -140,23 +140,41 @@ function Proposals() {
 
   return (
     <div className="proposals">
-      <h2>Propuestas de Mejora </h2>
-      <p>
-        Comparte tus ideas para mejorar el bienestar emocional en distintos
-        ámbitos. Tu voz puede marcar la diferencia.
-      </p>
+      <div className="descriptionProposals">
+        <h1>Propuestas de Mejora </h1>
+        <p>
+          Comparte tus ideas para mejorar el bienestar emocional en distintos
+          ámbitos. Tu voz puede marcar la diferencia.
+        </p>
+      </div>
 
       {/* PieChart wrapped in a container with specific size */}
       {/* Render both pie charts */}
       <div className="chartsContainer">
-        <p>hola</p>
         <div class="sentimentsContainer chartContainer">
+          <div className="chartText">
+            <h2>¿Cómo ven los estudiantes la salud mental?</h2>
+            <p>
+              Este gráfico muestra la distribución de respuestas por sentimiento
+              y tipo de institución. Cada segmento representa un sentimiento, y
+              nos ayuda a ver qué tipo de institución está asociado con cada
+              uno.
+            </p>
+          </div>
           <div className="chart" id="sentimentsChart">
             <SentimentSchoolPieChart feedbackData={feedbackData} />
           </div>
         </div>
         <div class="resourcesContainer chartContainer">
-          <p>hola</p>
+          <div className="chartText">
+            <h2>¿Qué apoyo necesitan los estudiantes?</h2>
+            <p>
+              Este gráfico muestra qué recursos para el bienestar estudiantil
+              son más solicitados por los alumnos. Cada barra representa un
+              recurso marcado en el formulario, ayudándonos a entender mejor qué
+              apoyo necesitan los estudiantes.
+            </p>
+          </div>
 
           <div className="chart">
             <ResourcesBarChart feedbackData={feedbackData} />
@@ -166,7 +184,7 @@ function Proposals() {
 
       {!showForm ? (
         hasSubmittedToday ? (
-          <p>✅ ¡Ya enviaste una sugerencia hoy! Vuelve mañana.</p>
+          <p>¡Ya enviaste una sugerencia hoy! Vuelve mañana.</p>
         ) : (
           <button
             id="showFormButtonProposals"

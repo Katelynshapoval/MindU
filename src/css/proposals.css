@@ -6,19 +6,60 @@
   font-family: Arial-Rounded-Light, sans-serif;
 }
 
+/* Custom Fonts */
+@font-face {
+  font-family: Arial-Rounded;
+  src: url("../fonts/Arial-Rounded.ttf");
+}
+
+@font-face {
+  font-family: Arial-Rounded-Light;
+  src: url("../fonts/Arial-Rounded-Light.ttf");
+}
+
 .proposals {
   display: flex;
   flex-direction: column;
   align-items: center;
   /* justify-content: center; */
   height: 90vh;
-  gap: 20px;
+  font-family: Arial-Rounded;
+  /* gap: 20px; */
   padding: 30px 0 40px;
   overflow-y: scroll;
 }
 
+.descriptionProposals {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
 .chartsContainer {
   margin: 20px auto; /* Center the chart horizontally */
+  display: flex;
+  justify-content: center;
+  /* flex-direction: column; */
+  align-items: center;
+  gap: 20px;
+}
+
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  /* height: 300px; */
+  align-items: center; /* Centers content vertically */
+  justify-content: space-around;
+  width: 100%;
+  padding: 20px;
+  height: 600px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.chartText {
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -26,29 +67,31 @@
   gap: 20px;
 }
 
-.chartContainer {
-  display: flex;
-  flex-direction: column;
-  height: 300px;
-  width: 30%;
+.chartText h2 {
+  height: 80px;
 }
 
 /* a */
-.chartContainer {
+.sentimentsContainer {
+  /* width: 80%;
+  max-width: 900px; */
   display: flex;
-  align-items: center; /* Centers content vertically */
-  justify-content: center; /* Centers content horizontally */
-  width: 100%;
-  padding: 20px;
+  /* justify-content: space-between; 
+  align-items: center; */
 }
 
-.sentimentsContainer {
-  width: 80%; /* Adjust width as needed */
-  max-width: 900px; /* Prevent it from getting too large */
-  display: flex;
-  justify-content: space-between; /* Ensures even spacing */
-  align-items: center; /* Centers vertically */
-  gap: 20px; /* Adds space between chart and text */
+/* .sentimentsContainer h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.sentimentsContainer p {
+  margin-top: 0px;
+} */
+
+.chartContainer p {
+  max-width: 450px;
+  text-align: center;
 }
 
 .chart {
@@ -64,13 +107,6 @@
   font-size: 18px;
 }
 
-/* .pieChartContainer #sentimentos {
-  width: 315px;
-} */
-/* .pieChartContainer #resources {
-  width: 525px;
-  height: 402px;
-} */
 .chart-container {
   width: 100%;
   display: flex;
@@ -117,6 +153,7 @@
 #showFormButtonProposals {
   height: 52px;
   width: 200px;
+  padding: 15px;
   font-size: 20px;
   background-color: #a6c9ac;
   border: 1px solid #869989;

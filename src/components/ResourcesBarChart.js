@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Bar } from "react-chartjs-2"; // Import the Bar chart component
+import { Bar } from "react-chartjs-2";
 import {
   Chart,
   CategoryScale,
@@ -19,7 +19,7 @@ const ResourcesBarChart = ({ feedbackData }) => {
       {
         label: "Resources Needed",
         data: [],
-        backgroundColor: [], // This will hold dynamic colors for each bar
+        backgroundColor: [],
         borderWidth: 1,
       },
     ],
@@ -36,25 +36,44 @@ const ResourcesBarChart = ({ feedbackData }) => {
 
     const labels = [];
     const data = [];
-    const colors = []; // Array to hold colors
+    const colors = [];
 
     const colorPalette = [
       "#FF6384",
       "#FF9F40",
       "#FFCD56",
       "#4BC0C0",
-      "#36A2EB", // predefined colors
+      "#36A2EB",
       "#FF5733",
       "#C70039",
       "#900C3F",
       "#581845",
-      "#DAF7A6", // additional colors
+      "#DAF7A6",
     ];
 
+    // Function to wrap text into multiple lines
+    const wrapLabel = (label, maxLength = 12) => {
+      if (label.length <= maxLength) return [label]; // Short labels stay the same
+      const words = label.split(" ");
+      const lines = [];
+      let line = "";
+
+      words.forEach((word) => {
+        if ((line + word).length > maxLength) {
+          lines.push(line.trim()); // Push current line
+          line = word + " ";
+        } else {
+          line += word + " ";
+        }
+      });
+      lines.push(line.trim()); // Push the last line
+      return lines;
+    };
+
     Object.keys(resourceCount).forEach((resource, index) => {
-      labels.push(`${resource}: ${resourceCount[resource]}`);
+      labels.push(wrapLabel(resource)); // Apply text wrapping
       data.push(resourceCount[resource]);
-      colors.push(colorPalette[index % colorPalette.length]); // Assign color from the palette
+      colors.push(colorPalette[index % colorPalette.length]);
     });
 
     setChartData({
@@ -63,15 +82,18 @@ const ResourcesBarChart = ({ feedbackData }) => {
         {
           label: "Resources Needed",
           data,
-          backgroundColor: colors, // Use the generated colors array
+          backgroundColor: colors,
           borderWidth: 1,
         },
       ],
     });
-  }, [feedbackData]); // Ensure this hook runs when `feedbackData` changes
+  }, [feedbackData]);
 
   return (
-    <div className="chart-container" style={{ height: "300px", width: "100%" }}>
+    <div
+      className="chart-container"
+      style={{ height: "250px", width: "500px" }}
+    >
       <Bar
         data={chartData}
         options={{
@@ -81,51 +103,46 @@ const ResourcesBarChart = ({ feedbackData }) => {
               text: "Número total de respuestas por recurso necesario",
             },
             legend: {
-              position: "top",
+              display: false,
+            },
+            tooltip: {
+              enabled: false,
+              callbacks: {
+                label: function (tooltipItem) {
+                  return ""; // No content shown in tooltip
+                },
+              },
             },
           },
           scales: {
             x: {
               title: {
-                display: true,
+                display: false,
                 text: "Recursos",
               },
               ticks: {
-                // Custom function to break long labels into two lines
-                callback: function (value) {
-                  const maxLength = 20; // Maximum characters per line
-                  if (value.length > maxLength) {
-                    return (
-                      value.substring(0, maxLength) +
-                      "\n" +
-                      value.substring(maxLength)
-                    );
-                  }
-                  return value;
-                },
-                maxRotation: 0, // No rotation, we'll wrap text instead
+                autoSkip: false, // Show all labels
+                maxRotation: 0, // Keep labels straight
                 minRotation: 0,
+                callback: function (value, index) {
+                  return chartData.labels[index]; // Return the wrapped label as an array
+                },
               },
-              barThickness: 30, // Reduce this value to make the bars thinner
+              barThickness: 30,
             },
             y: {
               title: {
                 display: true,
                 text: "Número de respuestas",
               },
-              beginAtZero: true, // Start Y-axis at 0
-              max: Math.max(3, Math.max(...chartData.datasets[0].data) + 1), // Dynamically limit max to 3 or the max value
+              beginAtZero: true,
               ticks: {
-                stepSize: 1, // This ensures the tick marks are integers (no decimals)
-                callback: function (value) {
-                  // Remove the commas from the number (just display as is)
-                  return value.toString(); // This will output the value without commas
-                },
+                stepSize: 1,
               },
             },
           },
-          responsive: true, // Make chart responsive
-          maintainAspectRatio: false, // Allow resizing the chart
+          responsive: true,
+          maintainAspectRatio: false,
         }}
       />
     </div>

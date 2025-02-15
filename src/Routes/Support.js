@@ -172,6 +172,7 @@ function Support() {
               <label htmlFor="problem">Problema</label>
               <input
                 id="problem"
+                maxLength={60}
                 value={formData.problem}
                 onChange={handleChange}
                 required

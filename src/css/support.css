@@ -33,6 +33,25 @@ body {
   font-size: 64px;
 }
 
+.support input,
+.support textarea {
+  margin-top: 5px;
+  padding: 8px;
+  border: 1px solid #8e88ab;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  transition: box-shadow 0.3s ease-in-out;
+  border: 1px solid #ced4da;
+}
+
+.support input:focus,
+.support textarea:focus {
+  box-shadow: 0 0 0 0.25rem rgba(166, 201, 172, 0.5); /* Green Box Shadow */
+  border-color: #a6c9ac;
+  outline: none;
+}
+
 .typicalProblems {
   display: flex;
   width: 70%;

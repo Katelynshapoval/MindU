@@ -49,7 +49,7 @@ function Proposals() {
 
   const checkIfSubmittedToday = async () => {
     try {
-      const userId = "unique_user_id"; // Replace with actual user identification
+      const userId = "unique_user_id"; // Use actual user identification (e.g., Firebase Auth ID)
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
       const todayEnd = new Date();
@@ -71,10 +71,6 @@ function Proposals() {
       console.error("Error checking submission: ", err);
     }
   };
-
-  useEffect(() => {
-    checkIfSubmittedToday();
-  }, []);
 
   const handleClickOutside = (event) => {
     if (formRef.current && !formRef.current.contains(event.target)) {
@@ -146,44 +142,7 @@ function Proposals() {
           Comparte tus ideas para mejorar el bienestar emocional en distintos
           ámbitos. Tu voz puede marcar la diferencia.
         </p>
-      </div>
-
-      {/* PieChart wrapped in a container with specific size */}
-      {/* Render both pie charts */}
-      <div className="chartsContainer">
-        <div class="sentimentsContainer chartContainer">
-          <div className="chartText">
-            <h2>¿Cómo ven los estudiantes la salud mental?</h2>
-            <p>
-              Este gráfico muestra la distribución de respuestas por sentimiento
-              y tipo de institución. Cada segmento representa un sentimiento, y
-              nos ayuda a ver qué tipo de institución está asociado con cada
-              uno.
-            </p>
-          </div>
-          <div className="chart" id="sentimentsChart">
-            <SentimentSchoolPieChart feedbackData={feedbackData} />
-          </div>
-        </div>
-        <div class="resourcesContainer chartContainer">
-          <div className="chartText">
-            <h2>¿Qué apoyo necesitan los estudiantes?</h2>
-            <p>
-              Este gráfico muestra qué recursos para el bienestar estudiantil
-              son más solicitados por los alumnos. Cada barra representa un
-              recurso marcado en el formulario, ayudándonos a entender mejor qué
-              apoyo necesitan los estudiantes.
-            </p>
-          </div>
-
-          <div className="chart">
-            <ResourcesBarChart feedbackData={feedbackData} />
-          </div>
-        </div>
-      </div>
-
-      {!showForm ? (
-        hasSubmittedToday ? (
+        {hasSubmittedToday ? (
           <p>¡Ya enviaste una sugerencia hoy! Vuelve mañana.</p>
         ) : (
           <button
@@ -192,8 +151,9 @@ function Proposals() {
           >
             Enviar Sugerencia
           </button>
-        )
-      ) : (
+        )}
+      </div>
+      {showForm && (
         <form ref={formRef} onSubmit={handleSubmit} className="proposalForm">
           {error && <p className="formError">{error}</p>}
           <div className="formHeader">
@@ -316,6 +276,39 @@ function Proposals() {
           </button>
         </form>
       )}
+      {/* PieChart wrapped in a container with specific size */}
+      {/* Render both pie charts */}
+      <div className="chartsContainer">
+        <div class="sentimentsContainer chartContainer">
+          <div className="chartText">
+            <h2>¿Cómo ven los estudiantes la salud mental?</h2>
+            <p>
+              Este gráfico muestra la distribución de respuestas por sentimiento
+              y tipo de institución. Cada segmento representa un sentimiento, y
+              nos ayuda a ver qué tipo de institución está asociado con cada
+              uno.
+            </p>
+          </div>
+          <div className="chart" id="sentimentsChart">
+            <SentimentSchoolPieChart feedbackData={feedbackData} />
+          </div>
+        </div>
+        <div class="resourcesContainer chartContainer">
+          <div className="chartText">
+            <h2>¿Qué apoyo necesitan los estudiantes?</h2>
+            <p>
+              Este gráfico muestra qué recursos para el bienestar estudiantil
+              son más solicitados por los alumnos. Cada barra representa un
+              recurso marcado en el formulario, ayudándonos a entender mejor qué
+              apoyo necesitan los estudiantes.
+            </p>
+          </div>
+
+          <div className="chart">
+            <ResourcesBarChart feedbackData={feedbackData} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

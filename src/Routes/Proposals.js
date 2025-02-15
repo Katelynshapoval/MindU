@@ -22,7 +22,7 @@ function Proposals() {
   const [sentiment, setSentiment] = useState("");
   const [extraComments, setExtraComments] = useState("");
   const [error, setError] = useState("");
-  const [hasSubmittedToday, setHasSubmittedToday] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false); // Changed
   const [showForm, setShowForm] = useState(false);
   const [feedbackData, setFeedbackData] = useState([]);
   const formRef = useRef(null);
@@ -47,30 +47,28 @@ function Proposals() {
     fetchFeedbackData();
   }, []); // Empty dependency array to run only once on component mount
 
-  const checkIfSubmittedToday = async () => {
+  const checkIfAlreadySubmitted = async () => {
     try {
       const userId = "unique_user_id"; // Use actual user identification (e.g., Firebase Auth ID)
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
 
+      // Check if this user has ever submitted
       const q = query(
         collection(db, "feedback"),
-        where("timestamp", ">=", todayStart),
-        where("timestamp", "<=", todayEnd),
         where("userId", "==", userId)
       );
 
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        setHasSubmittedToday(true);
+        setHasSubmitted(true); // User has already submitted
       }
     } catch (err) {
       console.error("Error checking submission: ", err);
     }
   };
+  useEffect(() => {
+    checkIfAlreadySubmitted();
+  }, []); // Only check once on component mount
 
   const handleClickOutside = (event) => {
     if (formRef.current && !formRef.current.contains(event.target)) {
@@ -90,9 +88,9 @@ function Proposals() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (hasSubmittedToday) {
+    if (hasSubmitted) {
       setError(
-        "¡Ya has enviado un formulario hoy! Solo se permite uno por día."
+        "¡Ya has enviado una sugerencia previamente! No puedes enviarla nuevamente."
       );
       return;
     }
@@ -124,7 +122,7 @@ function Proposals() {
       setExtraComments("");
       setError("");
       alert("¡Gracias por tus sugerencias!");
-      setHasSubmittedToday(true);
+      setHasSubmitted(true);
       setShowForm(false); // Hide form after submission
     } catch (err) {
       console.error("Error al enviar la sugerencia: ", err);
@@ -142,8 +140,11 @@ function Proposals() {
           Comparte tus ideas para mejorar el bienestar emocional en distintos
           ámbitos. Tu voz puede marcar la diferencia.
         </p>
-        {hasSubmittedToday ? (
-          <p>¡Ya enviaste una sugerencia hoy! Vuelve mañana.</p>
+        {hasSubmitted ? (
+          <p>
+            ¡Ya has enviado una sugerencia previamente! No puedes enviarla
+            nuevamente.
+          </p>
         ) : (
           <button
             id="showFormButtonProposals"
@@ -153,7 +154,7 @@ function Proposals() {
           </button>
         )}
       </div>
-      {showForm && (
+      {showForm && !hasSubmitted && (
         <form ref={formRef} onSubmit={handleSubmit} className="proposalForm">
           {error && <p className="formError">{error}</p>}
           <div className="formHeader">

@@ -101,6 +101,18 @@ function Tips() {
       [name]: value,
     }));
   };
+  const likeTip = async (tip) => {
+    let newLikes;
+    if (tip.likes.includes(uid)) {
+      newLikes = tip.likes.filter((person) => person !== uid);
+    } else {
+      newLikes = [...tip.likes, uid];
+    }
+    await updateDoc(doc(db, "tips", tip.id), {
+      ...tip,
+      likes: newLikes,
+    });
+  };
 
   // Add or update tip
   const handleAddOrUpdateTip = async (e) => {
@@ -141,6 +153,7 @@ function Tips() {
           ...newTip,
           Creator: uid,
           createdAt: serverTimestamp(),
+          likes: [],
         });
       }
       setNewTip({ Name: "", Description: "", Creator: "" });
@@ -242,25 +255,44 @@ function Tips() {
                 <p>{tip.Description}</p>
               </div>
               <div className="tipCardButtons">
-                {uid === tip.Creator && (
-                  <div className="creatorIcons">
-                    <button
-                      className="iconTip"
-                      onClick={() => deleteTip(tip.id)}
-                    >
-                      <MdDelete size={20} />
-                    </button>
-                    <button className="iconTip" onClick={() => editTip(tip.id)}>
-                      <MdEdit size={20} />
-                    </button>
-                  </div>
-                )}
-                <button
-                  className="iconTip"
-                  onClick={() => setOpenedComment(tip)}
+                <div className="buttonsFirstRow">
+                  {uid === tip.Creator && (
+                    // <div className="creatorIcons">
+                    <>
+                      <button
+                        className="iconTip"
+                        onClick={() => deleteTip(tip.id)}
+                      >
+                        <MdDelete size={20} />
+                      </button>
+                      <button
+                        className="iconTip"
+                        onClick={() => editTip(tip.id)}
+                      >
+                        <MdEdit size={20} />
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className="iconTip"
+                    onClick={() => setOpenedComment(tip)}
+                  >
+                    <MdComment size={20} />
+                  </button>
+                </div>
+                <div
+                  class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
                 >
-                  <MdComment size={20} />
-                </button>
+                  <p>{tip.likes?.length || 0}</p>
+                  <button
+                    className="iconTip"
+                    onClick={() => {
+                      uid ? likeTip(tip) : alert("Tienes que iniciar sesión.");
+                    }}
+                  >
+                    <FaHeart size={20} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}

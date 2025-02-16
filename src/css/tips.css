@@ -101,10 +101,31 @@ body {
   border: none;
   size: 50px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none; /* Optional: remove button border */
+  background: none; /* Optional: remove background */
+  padding: 0; /* Ensure no extra space */
+  cursor: pointer;
 }
 
 .iconTip:hover {
   color: rgb(30, 63, 36);
+}
+
+.tipCardButtons {
+  flex-direction: column;
+}
+
+.buttonsFirstRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 
 .tipCardButtons,
@@ -113,6 +134,19 @@ body {
   justify-content: center;
   gap: 10px;
 }
+
+.likesTip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.liked button {
+  color: red;
+}
+
+#likesTip button
 
 /* Add Tip Form Styles */
 .addTip {

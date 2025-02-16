@@ -230,7 +230,7 @@
 .formField textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #a8ab88;
+  border: 1px solid #ced4da;
   border-radius: 5px;
   background-color: #f9f9f9;
   font-size: 14px;
@@ -339,6 +339,7 @@
   background-color: #f9f9f9;
   font-size: 14px;
   transition: box-shadow 0.3s ease-in-out;
+  border: 1px solid #ced4da;
 }
 
 /* Focused State for "Other" Input */

@@ -12,6 +12,7 @@ import {
 import { db, auth } from "../firebase/firebase.js";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
+import { admins } from "../firebase/firebase";
 
 const ChatBox = () => {
   const [messages, setMessages] = useState([]); // State to hold the list of messages
@@ -19,6 +20,7 @@ const ChatBox = () => {
   const [nickname, setNickname] = useState("Anonymous"); // Default to "Anonymous"
   const scroll = useRef(); // Reference to scroll to the bottom of the chat
   const [uid, setUid] = useState(null);
+  const [admin, setAdmin] = useState(false);
 
   // Authentication state
   useEffect(() => {
@@ -34,6 +36,10 @@ const ChatBox = () => {
 
   // Fetch nickname from Firestore
   const fetchNickname = async (userUid) => {
+    if (admin) {
+      setNickname("Admin");
+      return;
+    }
     const nicknameDocRef = doc(db, "nicknames", userUid);
     const nicknameDoc = await getDoc(nicknameDocRef);
     if (nicknameDoc.exists()) {
@@ -73,6 +79,14 @@ const ChatBox = () => {
     }
   }, [messages]); // Depend on messages state
 
+  useEffect(() => {
+    // Check if admin is logged in
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setAdmin(user ? admins.includes(user.email) : false);
+    });
+    return () => unsubscribeAuth();
+  });
+
   // Function to handle message editing
   const handleEditMessage = (message) => {
     setEditMessageData(message); // Set message data to be edited
@@ -111,6 +125,7 @@ const ChatBox = () => {
           onChange={handleNicknameChange} // Allow user to change nickname
           onKeyDown={handleNicknameKeyPress} // Detect Enter key press to save nickname
           placeholder="Anonymous"
+          disabled={admin}
         />
       </form>
 

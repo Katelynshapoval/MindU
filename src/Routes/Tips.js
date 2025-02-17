@@ -17,6 +17,7 @@ import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import "../css/tips.css";
 import Comments from "./TipsComments";
 import { FaCaretDown, FaCaretRight, FaHeart } from "react-icons/fa";
+import { admins } from "../firebase/firebase";
 import { Timestamp } from "firebase/firestore";
 
 function Tips() {
@@ -24,13 +25,29 @@ function Tips() {
   const [tips, setTips] = useState([]);
   const [showProTips, setShowProTips] = useState(false);
   const [showUserTips, setShowUserTips] = useState(false);
+  const [admin, setAdmin] = useState(false);
+  const [proTips, setProTips] = useState([]);
+  const [editingProTip, setEditingProTip] = useState({
+    id: null,
+    Name: "",
+    Description: "",
+  });
+
   const [newTip, setNewTip] = useState({
     Name: "",
     Description: "",
     Creator: "",
   });
+
   const [editingTipId, setEditingTipId] = useState(null);
   const [openedComment, setOpenedComment] = useState(null);
+  useEffect(() => {
+    // Check if admin is logged in
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setAdmin(user ? admins.includes(user.email) : false);
+    });
+    return () => unsubscribeAuth();
+  });
   const professionalTips = [
     {
       Name: "Snacks de movimiento",
@@ -72,7 +89,7 @@ function Tips() {
     return () => unsubscribeAuth();
   }, []);
 
-  // Fetch tips
+  // Fetch user tips
   useEffect(() => {
     const q = query(collection(db, "tips"), orderBy("createdAt", "desc")); // Order by createdAt in descending order
 
@@ -92,11 +109,33 @@ function Tips() {
 
     return () => unsubscribeTips();
   }, []);
+  // Fetch professional tips
+  useEffect(() => {
+    const q = query(
+      collection(db, "professionalTips"),
+      orderBy("createdAt", "desc")
+    );
+    const unsubscribeProTips = onSnapshot(q, (querySnapshot) => {
+      setProTips(
+        querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
+    });
+    return () => unsubscribeProTips();
+  }, []);
 
-  // Handle tip input changes
+  // Handle user tip input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewTip((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle pro tip input changes
+  const handleProInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditingProTip((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -109,6 +148,20 @@ function Tips() {
       newLikes = [...tip.likes, uid];
     }
     await updateDoc(doc(db, "tips", tip.id), {
+      ...tip,
+      likes: newLikes,
+    });
+  };
+
+  // like pro
+  const likeProTip = async (tip) => {
+    let newLikes;
+    if (tip.likes.includes(uid)) {
+      newLikes = tip.likes.filter((person) => person !== uid);
+    } else {
+      newLikes = [...tip.likes, uid];
+    }
+    await updateDoc(doc(db, "professionalTips", tip.id), {
       ...tip,
       likes: newLikes,
     });
@@ -159,6 +212,39 @@ function Tips() {
       setNewTip({ Name: "", Description: "", Creator: "" });
     } catch (error) {
       console.error("Error adding/updating tip:", error);
+    }
+  };
+
+  const handleAddOrUpdateProTip = async (e) => {
+    e.preventDefault();
+    if (!editingProTip.Name || !editingProTip.Description)
+      return alert("Por favor, rellena todos los campos.");
+
+    try {
+      if (editingProTip.id) {
+        await updateDoc(doc(db, "professionalTips", editingProTip.id), {
+          Name: editingProTip.Name,
+          Description: editingProTip.Description,
+        });
+        setEditingProTip({ id: null, Name: "", Description: "" });
+      } else {
+        await addDoc(collection(db, "professionalTips"), {
+          Name: editingProTip.Name,
+          Description: editingProTip.Description,
+          createdAt: serverTimestamp(),
+          likes: [],
+        });
+      }
+
+      setEditingProTip({ Name: "", Description: "" });
+    } catch (error) {
+      console.error("Error adding/updating professional tip:", error);
+    }
+  };
+  // Delete pro tips
+  const deleteProTip = async (id) => {
+    if (window.confirm("¿Seguro que quieres borrar este tip?")) {
+      await deleteDoc(doc(db, "professionalTips", id));
     }
   };
 
@@ -216,7 +302,7 @@ function Tips() {
           {showProTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
         <div className="tipCardContainer">
-          {(showProTips ? professionalTips : professionalTips.slice(0, 3)).map(
+          {(showProTips ? proTips : proTips.slice(0, admin ? 2 : 3)).map(
             (tip) => (
               <div key={tip.id} className="tipCard">
                 <div className="tipCardText">
@@ -224,15 +310,85 @@ function Tips() {
                   <p>{tip.Description}</p>
                 </div>
                 <div className="tipCardButtons">
-                  <button
-                    className="iconTip"
-                    onClick={() => setOpenedComment(tip)}
+                  <div className="buttonsFirstRow">
+                    {admin && (
+                      // <div className="creatorIcons">
+                      <>
+                        <button
+                          className="iconTip"
+                          onClick={() => deleteProTip(tip.id)}
+                        >
+                          <MdDelete size={20} />
+                        </button>
+                        <button
+                          className="iconTip"
+                          onClick={() => {
+                            setEditingProTip({
+                              id: tip.id,
+                              Name: tip.Name,
+                              Description: tip.Description,
+                            });
+                          }}
+                        >
+                          <MdEdit size={20} />
+                        </button>
+                      </>
+                    )}
+                    <button
+                      className="iconTip"
+                      onClick={() => setOpenedComment(tip)}
+                    >
+                      <MdComment size={20} />
+                    </button>
+                  </div>
+                  <div
+                    class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
                   >
-                    <MdComment size={20} />
-                  </button>
+                    <p>{tip.likes?.length || 0}</p>
+                    <button
+                      className="iconTip"
+                      onClick={() => {
+                        uid
+                          ? likeProTip(tip)
+                          : alert("Tienes que iniciar sesión.");
+                      }}
+                    >
+                      <FaHeart size={20} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )
+          )}
+          {admin && (
+            <div className="addTip tipCard">
+              <h2>{editingTipId ? "Editar Tip" : "Añadir Tip"}</h2>
+              <form onSubmit={handleAddOrUpdateProTip} autoComplete="off">
+                <input
+                  type="text"
+                  name="Name"
+                  placeholder="Título"
+                  value={editingProTip.Name}
+                  maxLength={30}
+                  onChange={handleProInputChange}
+                  id="inputTip"
+                />
+                <textarea
+                  name="Description"
+                  placeholder="Descripción"
+                  maxLength={150}
+                  value={editingProTip.Description}
+                  onChange={handleProInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault(); // Prevents new line
+                      handleAddOrUpdateProTip(e); // Submit the form
+                    }
+                  }}
+                  id="textareaTip"
+                ></textarea>
+              </form>
+            </div>
           )}
         </div>
       </div>
@@ -256,7 +412,7 @@ function Tips() {
               </div>
               <div className="tipCardButtons">
                 <div className="buttonsFirstRow">
-                  {uid === tip.Creator && (
+                  {(uid === tip.Creator || admin) && (
                     // <div className="creatorIcons">
                     <>
                       <button

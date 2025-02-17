@@ -9,10 +9,12 @@ import * as IoIcons from "react-icons/io";
 import { getAuth, signOut } from "firebase/auth";
 import SignIn from "../components/SignIn";
 import { useNavigate } from "react-router-dom"; // For navigation
+import { admins } from "../firebase/firebase";
 
 function Navbar({ user }) {
   const [sidebar, setSidebar] = useState(false);
   const sidebarRef = useRef(null); // Reference for sidebar
+  const [admin, setAdmin] = useState(false);
 
   const showSidebar = () => setSidebar(!sidebar);
   const auth = getAuth();
@@ -48,6 +50,14 @@ function Navbar({ user }) {
     };
   }, []);
 
+  useEffect(() => {
+    // Check if admin is logged in
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setAdmin(user ? admins.includes(user.email) : false);
+    });
+    return () => unsubscribeAuth();
+  });
+
   return (
     <>
       <IconContext.Provider value={{ color: "undefined" }}>
@@ -72,7 +82,7 @@ function Navbar({ user }) {
           />
           {user ? (
             <div className="logOut" onClick={handleLogout}>
-              <span>Salir</span>
+              <span>Salir {admin ? "(admin)" : ""}</span>
               <IoIcons.IoIosLogOut />
             </div>
           ) : (

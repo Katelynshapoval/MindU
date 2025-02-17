@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import { admins } from "../firebase/firebase";
 
 const Message = ({ message, onEdit }) => {
   const [user] = useAuthState(auth); // Get current authenticated user
   const isUserMessage = message.uid === user.uid;
-
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => {
+    // Check if admin is logged in
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setAdmin(user ? admins.includes(user.email) : false);
+    });
+    return () => unsubscribeAuth();
+  });
   // Function to delete the message from Firestore
   const deleteMessage = async () => {
     try {
@@ -27,7 +35,7 @@ const Message = ({ message, onEdit }) => {
 
   return (
     <div className={`chat-bubble ${isUserMessage ? "right" : ""}`}>
-      {isUserMessage && (
+      {(isUserMessage || admin) && (
         <div className="message-actions">
           <button onClick={editMessage}>
             <MdEdit />

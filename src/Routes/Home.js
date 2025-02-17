@@ -6,7 +6,25 @@ import "../css/home.css";
 
 function Home() {
   const navigate = useNavigate(); // Hook for navigation
-
+  const responsive = {
+    superLargeDesktop: {
+      // the naming can be any, depends on you.
+      breakpoint: { max: 4000, min: 3000 },
+      items: 5,
+    },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 3,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 600 },
+      items: 2,
+    },
+    mobile: {
+      breakpoint: { max: 600, min: 0 },
+      items: 1,
+    },
+  };
   const articles = [
     {
       title: "Ansiedad: Lo que usted debe saber",
@@ -158,9 +176,7 @@ function Home() {
           removeArrowOnDeviceType={["desktop"]}
           itemClass="carousel-item"
           showDots
-          responsive={{
-            all: { breakpoint: { max: 4000, min: 0 }, items: 3 },
-          }}
+          responsive={responsive}
         >
           {articles.map((article, index) => (
             <div key={index} className="article-card">

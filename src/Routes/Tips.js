@@ -123,48 +123,18 @@ function Tips() {
     return () => unsubscribeProTips();
   }, []);
 
-  // Handle user tip input changes
-  const handleInputChange = (e) => {
+  // Handle tip input changes
+  const handleTipInputChange = (e, setTip) => {
     const { name, value } = e.target;
-    setNewTip((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setTip((prev) => ({ ...prev, [name]: value }));
   };
+  // Like tips
+  const likeAnyTip = async (tip, collectionName) => {
+    let newLikes = tip.likes.includes(uid)
+      ? tip.likes.filter((person) => person !== uid)
+      : [...tip.likes, uid];
 
-  // Handle pro tip input changes
-  const handleProInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditingProTip((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const likeTip = async (tip) => {
-    let newLikes;
-    if (tip.likes.includes(uid)) {
-      newLikes = tip.likes.filter((person) => person !== uid);
-    } else {
-      newLikes = [...tip.likes, uid];
-    }
-    await updateDoc(doc(db, "tips", tip.id), {
-      ...tip,
-      likes: newLikes,
-    });
-  };
-
-  // like pro
-  const likeProTip = async (tip) => {
-    let newLikes;
-    if (tip.likes.includes(uid)) {
-      newLikes = tip.likes.filter((person) => person !== uid);
-    } else {
-      newLikes = [...tip.likes, uid];
-    }
-    await updateDoc(doc(db, "professionalTips", tip.id), {
-      ...tip,
-      likes: newLikes,
-    });
+    await updateDoc(doc(db, collectionName, tip.id), { likes: newLikes });
   };
 
   // Add or update tip
@@ -341,21 +311,25 @@ function Tips() {
                       <MdComment size={20} />
                     </button>
                   </div>
-                  <div
-                    class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
-                  >
-                    <p>{tip.likes?.length || 0}</p>
-                    <button
-                      className="iconTip"
-                      onClick={() => {
-                        uid
-                          ? likeProTip(tip)
-                          : alert("Tienes que iniciar sesión.");
-                      }}
+                  {!admin && (
+                    <div
+                      class={`likesTip ${
+                        tip.likes.includes(uid) ? "liked" : ""
+                      }`}
                     >
-                      <FaHeart size={20} />
-                    </button>
-                  </div>
+                      <p>{tip.likes?.length || 0}</p>
+                      <button
+                        className="iconTip"
+                        onClick={() => {
+                          uid
+                            ? likeAnyTip(tip, "professionalTips")
+                            : alert("Tienes que iniciar sesión.");
+                        }}
+                      >
+                        <FaHeart size={20} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )
@@ -370,7 +344,7 @@ function Tips() {
                   placeholder="Título"
                   value={editingProTip.Name}
                   maxLength={30}
-                  onChange={handleProInputChange}
+                  onChange={(e) => handleTipInputChange(e, setEditingProTip)}
                   id="inputTip"
                 />
                 <textarea
@@ -378,7 +352,7 @@ function Tips() {
                   placeholder="Descripción"
                   maxLength={150}
                   value={editingProTip.Description}
-                  onChange={handleProInputChange}
+                  onChange={(e) => handleTipInputChange(e, setEditingProTip)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault(); // Prevents new line
@@ -436,19 +410,23 @@ function Tips() {
                     <MdComment size={20} />
                   </button>
                 </div>
-                <div
-                  class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
-                >
-                  <p>{tip.likes?.length || 0}</p>
-                  <button
-                    className="iconTip"
-                    onClick={() => {
-                      uid ? likeTip(tip) : alert("Tienes que iniciar sesión.");
-                    }}
+                {!admin && (
+                  <div
+                    class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
                   >
-                    <FaHeart size={20} />
-                  </button>
-                </div>
+                    <p>{tip.likes?.length || 0}</p>
+                    <button
+                      className="iconTip"
+                      onClick={() => {
+                        uid
+                          ? likeAnyTip(tip, "tips")
+                          : alert("Tienes que iniciar sesión.");
+                      }}
+                    >
+                      <FaHeart size={20} />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -462,7 +440,7 @@ function Tips() {
                   placeholder="Título"
                   value={newTip.Name}
                   maxLength={30}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleTipInputChange(e, setNewTip)}
                   id="inputTip"
                 />
                 <textarea
@@ -470,7 +448,7 @@ function Tips() {
                   placeholder="Descripción"
                   maxLength={150}
                   value={newTip.Description}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleTipInputChange(e, setNewTip)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault(); // Prevents new line

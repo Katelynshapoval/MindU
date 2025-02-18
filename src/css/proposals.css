@@ -101,7 +101,7 @@
 }
 
 .chart {
-  flex: 1; /* Makes the chart take up 50% */
+  flex: 1; /* Makes the chart take up 50%. */
   display: flex;
   justify-content: center; /* Centers chart */
   align-items: center;

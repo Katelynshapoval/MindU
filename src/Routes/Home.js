@@ -1,11 +1,59 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // For navigation
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import "../css/home.css";
+import { auth, db } from "../firebase/firebase";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDocs,
+  onSnapshot,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { admins } from "../firebase/firebase";
+import { AiOutlineClose } from "react-icons/ai"; // Import close icon
+import { MdDelete } from "react-icons/md";
 
 function Home() {
   const navigate = useNavigate(); // Hook for navigation
+  const [articleFormData, setArticleFormData] = useState({
+    title: "",
+    description: "",
+    link: "",
+  });
+  const [showAddArticleForm, setShowAddArticleForm] = useState(false);
+  const formRef = useRef(null);
+  const [admin, setAdmin] = useState(false); // Admin status
+  const [articles, setArticles] = useState([]); // State to store articles from Firestore
+
+  useEffect(() => {
+    // Check if admin is logged in
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setAdmin(user ? admins.includes(user.email) : false);
+    });
+    return () => unsubscribeAuth();
+  });
+
+  // Real-time listener to fetch articles from Firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "articles"),
+      (querySnapshot) => {
+        const articlesData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setArticles(articlesData); // Update state with new articles
+      }
+    );
+
+    // Cleanup function to unsubscribe from Firestore listener when component unmounts
+    return () => unsubscribe();
+  }, []);
+
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -25,38 +73,99 @@ function Home() {
       items: 1,
     },
   };
-  const articles = [
-    {
-      title: "Ansiedad: Lo que usted debe saber",
-      description:
-        "Las experiencias negativas en la infancia y la historia familiar tal vez aumenten el riesgo.",
-      link: "https://magazine.medlineplus.gov/es/art%C3%ADculo/ansiedad-lo-que-usted-debe-saber/",
-    },
-    {
-      title: "No dormir",
-      description:
-        "Los lectores escriben sobre los problemas que causa la falta de sueño.",
-      link: "https://elpais.com/opinion/2025-02-09/no-dormir.html",
-    },
-    {
-      title: "El silencio mata: suicidio entre los adolescentes",
-      description:
-        "Los expertos coinciden en que las conductas suicidas y las autolesiones no son el problema.",
-      link: "https://elpais.com/sociedad/2025-02-02/el-silencio-mata-como-y-por-que-hablar-del-suicidio-entre-los-adolescentes.html",
-    },
-    {
-      title: "Hay algo peor que sentir emociones oscuras: evitarlas",
-      description:
-        "Priorizamos los acontecimientos negativos por encima de los positivos, lo cual parece… negativo.",
-      link: "https://elpais.com/eps/2025-01-16/hay-algo-peor-que-sentir-emociones-oscuras-evitarlas.html",
-    },
-    {
-      title: "Los contenidos negativos en redes",
-      description:
-        "Un nuevo estudio concluye que lo que perjudica la salud mental no es tanto el uso de internet como el tipo de información.",
-      link: "https://elpais.com/tecnologia/2024-12-17/los-contenidos-negativos-en-redes-afectan-mas-a-las-personas-con-peor-salud-mental.html",
-    },
-  ];
+  // const articles = [
+  //   {
+  //     title: "Ansiedad: Lo que usted debe saber",
+  //     description:
+  //       "Las experiencias negativas en la infancia y la historia familiar tal vez aumenten el riesgo.",
+  //     link: "https://magazine.medlineplus.gov/es/art%C3%ADculo/ansiedad-lo-que-usted-debe-saber/",
+  //   },
+  //   {
+  //     title: "No dormir",
+  //     description:
+  //       "Los lectores escriben sobre los problemas que causa la falta de sueño.",
+  //     link: "https://elpais.com/opinion/2025-02-09/no-dormir.html",
+  //   },
+  //   {
+  //     title: "El silencio mata: suicidio entre los adolescentes",
+  //     description:
+  //       "Los expertos coinciden en que las conductas suicidas y las autolesiones no son el problema.",
+  //     link: "https://elpais.com/sociedad/2025-02-02/el-silencio-mata-como-y-por-que-hablar-del-suicidio-entre-los-adolescentes.html",
+  //   },
+  //   {
+  //     title: "Hay algo peor que sentir emociones oscuras: evitarlas",
+  //     description:
+  //       "Priorizamos los acontecimientos negativos por encima de los positivos, lo cual parece… negativo.",
+  //     link: "https://elpais.com/eps/2025-01-16/hay-algo-peor-que-sentir-emociones-oscuras-evitarlas.html",
+  //   },
+  //   {
+  //     title: "Los contenidos negativos en redes",
+  //     description:
+  //       "Un nuevo estudio concluye que lo que perjudica la salud mental no es tanto el uso de internet como el tipo de información.",
+  //     link: "https://elpais.com/tecnologia/2024-12-17/los-contenidos-negativos-en-redes-afectan-mas-a-las-personas-con-peor-salud-mental.html",
+  //   },
+  // ];
+
+  // Function to handle form input changes
+  const handleArticleChange = (e) => {
+    const { id, value } = e.target;
+    setArticleFormData((prev) => ({ ...prev, [id]: value }));
+  };
+  // Function to handle form submission and add article to Firebase
+  const handleAddArticleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await addDoc(collection(db, "articles"), {
+        title: articleFormData.title,
+        description: articleFormData.description,
+        link: articleFormData.link,
+        timestamp: serverTimestamp(),
+      });
+      alert("Artículo añadido correctamente!");
+      setShowAddArticleForm(false);
+      setArticleFormData({ title: "", description: "", link: "" });
+    } catch (error) {
+      console.error("Error adding article:", error);
+      alert("Hubo un error al agregar el artículo.");
+    }
+  };
+
+  // Close the form if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (formRef.current && !formRef.current.contains(e.target)) {
+        setShowAddArticleForm(false); // Close the form
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleDeleteArticle = async (articleId) => {
+    const isConfirmed = window.confirm(
+      "¿Estás seguro de que deseas eliminar este artículo?"
+    );
+
+    if (isConfirmed) {
+      try {
+        // Reference to the article document in Firestore
+        const articleRef = doc(db, "articles", articleId);
+
+        // Delete the article from Firestore
+        await deleteDoc(articleRef);
+
+        // Optional: You can show an alert or update local state here to reflect the change
+        alert("Artículo eliminado correctamente!");
+      } catch (error) {
+        console.error("Error deleting article:", error);
+        alert("Hubo un error al eliminar el artículo.");
+      }
+    }
+  };
 
   return (
     <div className="home">
@@ -173,7 +282,7 @@ function Home() {
           keyBoardControl
           transitionDuration={500}
           containerClass="carousel-container"
-          removeArrowOnDeviceType={["desktop"]}
+          removeArrowOnDeviceType={["mobile", "tablet"]}
           itemClass="carousel-item"
           showDots
           responsive={responsive}
@@ -182,18 +291,85 @@ function Home() {
             <div key={index} className="article-card">
               <h3>{article.title}</h3>
               <p>{article.description}</p>
-              <a
-                className="readArticle"
-                href={article.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Leer más
-              </a>
+              <div className="articleButtons">
+                <a
+                  className="readArticle"
+                  href={article.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Leer más
+                </a>
+                {admin && (
+                  <button
+                    class="deleteArticle"
+                    onClick={() => handleDeleteArticle(article.id)}
+                  >
+                    <MdDelete size={15} />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </Carousel>
       </div>
+      {/* Add Article Button */}
+      {admin && (
+        <button
+          onClick={() => setShowAddArticleForm(true)}
+          id="addArticleButton"
+        >
+          Agregar Artículo
+        </button>
+      )}
+
+      {/* Add Article Form */}
+      {showAddArticleForm && (
+        <form ref={formRef} onSubmit={handleAddArticleSubmit} id="articlesForm">
+          <div className="formHeader">
+            <p>Artículo</p>
+            <button
+              className="closeButtonProposals"
+              id="closeForm"
+              onClick={() => setShowAddArticleForm(false)}
+            >
+              <AiOutlineClose />
+            </button>
+          </div>
+          <div className="formField">
+            <label>Nombre</label>
+            <input
+              id="title"
+              type="text"
+              value={articleFormData.title}
+              onChange={handleArticleChange}
+              required
+            />
+          </div>
+          <div className="formField">
+            <label>Descripción</label>
+            <textarea
+              id="description"
+              value={articleFormData.description}
+              onChange={handleArticleChange}
+              required
+            />
+          </div>
+          <div className="formField">
+            <label>Enlace</label>
+            <input
+              id="link"
+              type="url"
+              value={articleFormData.link}
+              onChange={handleArticleChange}
+              required
+            />
+          </div>
+          <button id="submitArticle" type="submit">
+            Añadir Artículo
+          </button>
+        </form>
+      )}
     </div>
   );
 }

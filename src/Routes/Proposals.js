@@ -13,6 +13,7 @@ import "../css/proposals.css";
 import SentimentSchoolPieChart from "../components/SentimentSchoolPieChart"; // Pie chart for sentiments
 import ResourcesBarChart from "../components/ResourcesBarChart"; // Bar chart for resources
 import { fetchFeedbackData } from "../components/processData"; // Fetch function
+import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import { admins } from "../firebase/firebase"; // Admin list
 
 function Proposals() {

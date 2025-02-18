@@ -62,7 +62,7 @@ function Navbar({ user }) {
     <>
       <IconContext.Provider value={{ color: "undefined" }}>
         <div className="navbar">
-          <div>
+          <div id="leftIconsNavbar">
             <Link to="#" className="menu-bars">
               <FaBars onClick={showSidebar} />
             </Link>
@@ -82,7 +82,9 @@ function Navbar({ user }) {
           />
           {user ? (
             <div className="logOut" onClick={handleLogout}>
-              <span>Salir {admin ? "(admin)" : ""}</span>
+              <span style={{ display: "inline-block", textAlign: "center" }}>
+                Salir <br /> {admin ? "(admin)" : ""}
+              </span>
               <IoIcons.IoIosLogOut />
             </div>
           ) : (

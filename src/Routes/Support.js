@@ -9,6 +9,11 @@ function Support() {
   const [showForm, setShowForm] = useState(false);
   const formRef = useRef(null); // Reference for the form
   const problemRefs = useRef([]); // Refs for the problem descriptions
+  const [articleFormData, setArticleFormData] = useState({
+    title: "",
+    description: "",
+    link: "",
+  });
 
   const user = auth.currentUser;
   const [formData, setFormData] = useState({

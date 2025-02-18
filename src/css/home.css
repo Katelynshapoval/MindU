@@ -280,3 +280,144 @@ body {
 .readArticle.right:hover::after {
   transform-origin: bottom right;
 }
+
+#addArticleButton {
+  align-items: center;
+  appearance: none;
+  margin: 20px;
+  padding: 20px;
+  background-color: #fcfcfd;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  /* overflow: hidden; */
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow, transform;
+  font-size: 18px;
+}
+
+#addArticleButton:focus {
+  box-shadow: #d6d6e7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+}
+
+#addArticleButton:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+#addArticleButton:active {
+  box-shadow: #d6d6e7 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
+#articlesForm {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  border: 1px solid #a6c9ac;
+  padding: 30px;
+  background-color: white;
+  width: 300px;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Fields */
+#articlesForm .formField {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+#articlesForm .formField label:not(.checkboxLabel) {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Select and Textarea Styling */
+#articlesForm.formField select,
+#articlesForm .formField textarea,
+#articlesForm .formField input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+/* Textarea Styling */
+#articlesForm .formField textarea {
+  min-height: 90px;
+  max-height: 200px;
+  resize: vertical;
+}
+
+/* Focused State for Input/Textarea */
+#articlesForm .formField textarea:focus,
+#articlesForm .formField input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(166, 201, 172, 0.5); /* Green Box Shadow */
+  border-color: #a6c9ac;
+  outline: none;
+}
+
+/* Submit Button */
+#submitArticle {
+  width: 120px;
+  height: 40px;
+  align-self: center;
+  background-color: #a6c9ac;
+  border: 1px solid #869989;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+  font-size: 16px;
+}
+
+#submitArticle:hover {
+  background-color: #a6c9ac83;
+}
+
+.deleteArticle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  size: 10;
+  cursor: pointer;
+}
+
+.deleteArticle:hover {
+  opacity: 0.8;
+}
+.articleButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

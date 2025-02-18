@@ -46,7 +46,7 @@
 }
 
 .menu-bars {
-  margin-left: 2rem;
+  /* margin-left: 2rem; */
   font-size: 2rem;
   background: none;
   color: #ffffff;
@@ -94,12 +94,12 @@
 
 .navbar-toggle {
   background-color: #88ab8e;
-  width: 100%;
+  /* width: 100%; */
   height: 80px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-left: -7px;
+  margin-left: 25px;
 }
 
 /* Navigation Links */
@@ -217,4 +217,17 @@ span {
   padding: 5px;
   cursor: pointer;
   border-radius: 5px;
+}
+
+#leftIconsNavbar {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+#leftIconsNavbar .menu-bars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

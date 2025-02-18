@@ -6,6 +6,8 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
+  getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase/firebase.js";
 import { Timestamp } from "firebase/firestore";
@@ -20,6 +22,7 @@ const SendMessage = ({
   const [showWarning, setShowWarning] = useState(false); // State to control the warning div
   const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple submissions
   const inputRef = useRef(null); // Create a ref to the input field
+  const [uid, setUid] = useState(null); // user uid
 
   // Sensitive words list (in Spanish)
   const sensitiveWords = [
@@ -53,6 +56,32 @@ const SendMessage = ({
     }
   }, [editMessageData]);
 
+  // Authentication state
+  useEffect(() => {
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      setUid(user ? user.uid : null);
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Function to check if a user is muted
+  const isUserMuted = async (userId) => {
+    const muteDocRef = doc(db, "mutedUsers", userId);
+    const muteDoc = await getDoc(muteDocRef);
+
+    if (!muteDoc.exists()) return false; // Not muted
+
+    const { expiresAt } = muteDoc.data();
+    const now = new Date();
+
+    if (now > expiresAt.toDate()) {
+      await deleteDoc(muteDocRef); // Remove expired mute
+      return false;
+    }
+
+    return true;
+  };
+
   // Autofocus on input
   useEffect(() => {
     inputRef.current.focus();
@@ -61,6 +90,10 @@ const SendMessage = ({
   // Function to handle sending or updating the message
   const sendMessage = async (event) => {
     event.preventDefault(); // Prevent form default submission behavior
+    if (await isUserMuted(auth.currentUser.uid)) {
+      alert("Estás temporalmente bloqueado. Por favor, espera (1 minuto).");
+      return;
+    }
 
     if (isSubmitting) return; // Prevent multiple submissions
 

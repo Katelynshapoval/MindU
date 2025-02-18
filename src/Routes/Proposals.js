@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { db } from "../firebase/firebase"; // Firebase config
+import { db, auth } from "../firebase/firebase"; // Firebase config
 import {
   collection,
   addDoc,
@@ -10,52 +10,90 @@ import {
 } from "firebase/firestore"; // Firestore methods
 import { AiOutlineClose } from "react-icons/ai"; // Import close icon
 import "../css/proposals.css";
-import SentimentSchoolPieChart from "../components/SentimentSchoolPieChart"; // Import sentiment and school pie chart
-import ResourcesBarChart from "../components/ResourcesBarChart"; // Import resources pie chart
-import { fetchFeedbackData } from "../components/processData"; // import the fetch function
+import SentimentSchoolPieChart from "../components/SentimentSchoolPieChart"; // Pie chart for sentiments
+import ResourcesBarChart from "../components/ResourcesBarChart"; // Bar chart for resources
+import { fetchFeedbackData } from "../components/processData"; // Fetch function
+import { admins } from "../firebase/firebase"; // Admin list
 
 function Proposals() {
-  const [schoolType, setSchoolType] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [resources, setResources] = useState([]);
-  const [otherResources, setOtherResources] = useState("");
-  const [sentiment, setSentiment] = useState("");
-  const [extraComments, setExtraComments] = useState("");
-  const [error, setError] = useState("");
-  const [hasSubmitted, setHasSubmitted] = useState(false); // Changed
-  const [showForm, setShowForm] = useState(false);
-  const [feedbackData, setFeedbackData] = useState([]);
+  // User-related states
+  const [uid, setUid] = useState(null); // User ID
+  const [admin, setAdmin] = useState(false); // Admin status
+
+  // Form input states
+  const [schoolType, setSchoolType] = useState(""); // School type selection
+  const [feedback, setFeedback] = useState(""); // Feedback text
+  const [resources, setResources] = useState([]); // Selected resources
+  const [otherResources, setOtherResources] = useState(""); // Custom resource input
+  const [sentiment, setSentiment] = useState(""); // Sentiment selection
+  const [extraComments, setExtraComments] = useState(""); // Additional comments
+
+  // UI and feedback states
+  const [error, setError] = useState(""); // Error message
+  const [hasSubmitted, setHasSubmitted] = useState(false); // Submission check
+  const [showForm, setShowForm] = useState(false); // Show/hide form
+  const [feedbackData, setFeedbackData] = useState([]); // Feedback data for charts
+
+  // Reference for form (used for outside click detection)
   const formRef = useRef(null);
 
-  // Fetching data from Firebase
-  // Fetching data from Firebase
+  // Resource options for checkboxes
+  const RESOURCE_OPTIONS = [
+    "Más talleres",
+    "Acceso a profesionales",
+    "Espacios seguros",
+    "Material educativo",
+    "Otro",
+  ];
+
+  // Reset form fields after submission
+  const resetForm = () => {
+    setSchoolType("");
+    setFeedback("");
+    setResources([]);
+    setOtherResources("");
+    setSentiment("");
+    setExtraComments("");
+  };
+
+  // Check if user is logged in and if it's admin
   useEffect(() => {
-    const fetchFeedbackData = async () => {
-      try {
-        // Get the collection "feedback" from Firestore
-        const q = query(collection(db, "feedback"));
-        const querySnapshot = await getDocs(q);
-
-        // Store the fetched data in the state
-        const data = querySnapshot.docs.map((doc) => doc.data());
-        setFeedbackData(data);
-      } catch (error) {
-        console.error("Error fetching feedback data:", error);
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUid(user.uid);
+        // Set admin to true if the email is in the list of admin emails
+        setAdmin(admins.includes(user.email));
+      } else {
+        setUid(null);
+        setAdmin(false);
       }
-    };
+    });
 
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Fetch feedback data for charts
+  const fetchFeedbackData = async () => {
+    try {
+      const q = query(collection(db, "feedback"));
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs.map((doc) => doc.data());
+      setFeedbackData(data);
+    } catch (error) {
+      console.error("Error fetching feedback data:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchFeedbackData();
-  }, []); // Empty dependency array to run only once on component mount
+  }, []);
 
   const checkIfAlreadySubmitted = async () => {
     try {
-      const userId = "unique_user_id"; // Use actual user identification (e.g., Firebase Auth ID)
+      if (!uid || admin) return; // Don't check if user isn't logged in
 
       // Check if this user has ever submitted
-      const q = query(
-        collection(db, "feedback"),
-        where("userId", "==", userId)
-      );
+      const q = query(collection(db, "feedback"), where("uid", "==", uid));
 
       const querySnapshot = await getDocs(q);
 
@@ -79,30 +117,24 @@ function Proposals() {
   useEffect(() => {
     if (showForm) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showForm]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (hasSubmitted) {
       setError(
         "¡Ya has enviado una sugerencia previamente! No puedes enviarla nuevamente."
       );
       return;
     }
-
     if (!schoolType || !feedback || !sentiment) {
       setError("Por favor, completa todos los campos.");
       return;
     }
 
     try {
-      const userId = "unique_user_id"; // Replace with actual user ID
-
       await addDoc(collection(db, "feedback"), {
         schoolType,
         feedback,
@@ -111,19 +143,15 @@ function Proposals() {
         sentiment,
         extraComments,
         timestamp: serverTimestamp(),
-        userId,
+        uid,
       });
 
-      setSchoolType("");
-      setFeedback("");
-      setResources([]);
-      setOtherResources("");
-      setSentiment("");
-      setExtraComments("");
+      resetForm();
       setError("");
       alert("¡Gracias por tus sugerencias!");
-      setHasSubmitted(true);
-      setShowForm(false); // Hide form after submission
+      setHasSubmitted(!admin);
+      setShowForm(false);
+      fetchFeedbackData();
     } catch (err) {
       console.error("Error al enviar la sugerencia: ", err);
       setError(
@@ -140,7 +168,7 @@ function Proposals() {
           Comparte tus ideas para mejorar el bienestar emocional en distintos
           ámbitos. Tu voz puede marcar la diferencia.
         </p>
-        {hasSubmitted ? (
+        {hasSubmitted && !admin ? (
           <p>
             ¡Ya has enviado una sugerencia previamente! No puedes enviarla
             nuevamente.
@@ -202,13 +230,7 @@ function Proposals() {
           <div className="formField">
             <label>¿Qué recursos crees que necesitamos?</label>
             <div className="checkboxGroup">
-              {[
-                "Más talleres",
-                "Acceso a profesionales",
-                "Espacios seguros",
-                "Material educativo",
-                "Otro",
-              ].map((resource) => (
+              {RESOURCE_OPTIONS.map((resource) => (
                 <div className="checkbox-wrapper-1" key={resource}>
                   <input
                     id={`checkbox-${resource}`}

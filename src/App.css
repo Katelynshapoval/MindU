@@ -17,18 +17,21 @@
 }
 
 .home::-webkit-scrollbar,
-.tips::-webkit-scrollbar {
+.tips::-webkit-scrollbar,
+.proposals::-webkit-scrollbar {
   width: 12px;
 }
 
 .home::-webkit-scrollbar-track,
-.tips::-webkit-scrollbar-track {
+.tips::-webkit-scrollbar-track,
+.proposals::-webkit-scrollbar-track {
   background-color: #e4e4e4;
   border-radius: 100px;
 }
 
 .home::-webkit-scrollbar-thumb,
-.tips::-webkit-scrollbar-thumb {
+.tips::-webkit-scrollbar-thumb,
+.proposals::-webkit-scrollbar-thumb {
   background-color: #88ab8e;
   border-radius: 100px;
 }

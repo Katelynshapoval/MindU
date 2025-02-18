@@ -20,16 +20,18 @@ function Support() {
 
   const problems = [
     {
-      name: "Problem 1",
-      description: "This is the description for problem 1.",
+      name: "No puedo usar el chat",
+      description:
+        "Debes iniciar sesión. Solo los usuarios registrados pueden usar el chat, comentar, dar 'me gusta' y agregar consejos.",
     },
     {
-      name: "Problem 2",
-      description: "This is the description for problem 2.",
+      name: "No puedo enviar el formulario de propuestas",
+      description: "Lamentablemente, solo puedes enviarlo una vez.",
     },
     {
-      name: "Problem 3",
-      description: "This is the description for problem 3.",
+      name: "En el chat, quiero usar otro apodo",
+      description:
+        "Hay un campo en el chat donde puedes cambiarlo. Simplemente escribe tu nuevo apodo y presiona 'Enter'.",
     },
   ];
 

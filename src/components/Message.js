@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, deleteDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  deleteDoc,
+  updateDoc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { MdEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import { MdBlock } from "react-icons/md";
 import { admins } from "../firebase/firebase";
 
 const Message = ({ message, onEdit }) => {
@@ -26,6 +34,22 @@ const Message = ({ message, onEdit }) => {
     }
   };
 
+  // Function to mute a user for 1 minute
+  const muteUser = async (userId) => {
+    if (!admin) return; // Only admins can mute
+
+    const muteDocRef = doc(db, "mutedUsers", userId);
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 1); // Mute for 1 minute
+
+    await setDoc(muteDocRef, {
+      uid: userId,
+      expiresAt: expiresAt, // Store expiration timestamp
+    });
+
+    alert("El usuario ha sido silenciado por 1 minuto.");
+  };
+
   // Function to handle editing the message
   const editMessage = () => {
     if (onEdit) {
@@ -43,6 +67,11 @@ const Message = ({ message, onEdit }) => {
           <button onClick={deleteMessage}>
             <MdDelete />
           </button>
+          {admin && !isUserMessage && (
+            <button onClick={() => muteUser(message.uid)}>
+              <MdBlock />
+            </button>
+          )}
         </div>
       )}
       <div className="chat-bubble__right">

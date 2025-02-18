@@ -8,6 +8,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase/firebase.js";
 import Message from "./Message";

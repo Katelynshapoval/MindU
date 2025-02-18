@@ -34,6 +34,27 @@ body {
   text-align: center;
 }
 
+@media (max-width: 1024px) {
+  .support h1 {
+    font-size: 48px;
+  }
+  .formInitiation h2 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .support h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .support h1 {
+    font-size: 28px;
+  }
+}
+
 .support input,
 .support textarea {
   margin-top: 5px;
@@ -56,6 +77,7 @@ body {
 .typicalProblems {
   display: flex;
   width: 70%;
+  min-width: 350px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -86,6 +108,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   gap: 20px;
 }
 
@@ -113,7 +136,11 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 50%;
+  max-width: 500px;
+  min-width: 350px;
   background-color: white;
+  text-align: left;
 }
 
 .field {
@@ -124,9 +151,11 @@ body {
 }
 
 .field textarea {
-  max-width: 500px;
+  /* max-width: 500px;
   min-width: 500px;
-  width: 500px;
+  width: 500px; */
+  width: 100%;
+  resize: vertical;
   min-height: 100px;
   max-height: 200px;
 }

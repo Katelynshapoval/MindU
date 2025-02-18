@@ -25,6 +25,7 @@ body {
 .main {
   height: 100%;
   width: 100%;
+  /* min-width: 500px; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -87,6 +88,7 @@ body {
 .feed {
   /* overflow: scroll; */
   width: 100%;
+  min-width: 370px;
   padding: 0;
   height: 80%;
   margin-top: 40px;

@@ -182,6 +182,7 @@ function Support() {
                 maxLength={60}
                 value={formData.problem}
                 onChange={handleChange}
+                autoComplete="off"
                 required
               />
             </div>

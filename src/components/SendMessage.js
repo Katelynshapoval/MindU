@@ -151,7 +151,7 @@ const SendMessage = ({
   };
 
   return (
-    <div>
+    <div id="sendMessageBlock">
       {/* Warning div for sensitive words */}
       {showWarning && (
         <div className="warning-div">

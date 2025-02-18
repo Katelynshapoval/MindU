@@ -43,6 +43,8 @@ body {
   flex-direction: column;
   height: 95%;
   justify-content: space-around;
+  width: 100%;
+  max-width: 600px;
 }
 
 .nickname-form {
@@ -169,12 +171,20 @@ body {
 .send-message {
   display: flex;
   margin-bottom: 20px;
+  /* width: 100%; */
+}
+
+#sendMessageBlock {
+  width: 100%;
 }
 
 /* Input Container */
 .inputContainer {
   position: relative;
-  width: 694px;
+  /* width: 694px; */
+  min-width: 350px;
+  max-width: 600px;
+  width: 100%;
   padding: 5px;
 }
 

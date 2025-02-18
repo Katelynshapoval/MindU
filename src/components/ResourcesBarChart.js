@@ -92,7 +92,7 @@ const ResourcesBarChart = ({ feedbackData }) => {
   return (
     <div
       className="chart-container"
-      style={{ height: "250px", width: "500px" }}
+      // style={{ height: "250px", width: "500px" }}
     >
       <Bar
         data={chartData}
@@ -126,6 +126,9 @@ const ResourcesBarChart = ({ feedbackData }) => {
                 minRotation: 0,
                 callback: function (value, index) {
                   return chartData.labels[index]; // Return the wrapped label as an array
+                },
+                font: {
+                  size: window.innerWidth < 600 ? 9 : 12,
                 },
               },
               barThickness: 30,

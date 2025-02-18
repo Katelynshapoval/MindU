@@ -37,6 +37,7 @@
   justify-content: center;
   align-items: center;
   gap: 20px;
+  padding: 30px;
 }
 
 .chartsContainer {
@@ -47,6 +48,8 @@
   /* flex-direction: column; */
   align-items: center;
   gap: 20px;
+  width: 80%;
+  min-width: 320px;
 }
 
 .chartContainer {
@@ -93,7 +96,7 @@
 } */
 
 .chartContainer p {
-  max-width: 450px;
+  /* max-width: 450px; */
   text-align: center;
 }
 
@@ -111,7 +114,7 @@
 }
 
 .chart-container {
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   height: 300px;
   flex-direction: column;
@@ -119,10 +122,21 @@
   justify-content: center;
   align-items: center;
   position: static;
+  width: 100%;
+}
+
+.resourcesContainer .chart {
+  /* width: 300px; */
+  height: 100px;
+}
+
+.resourcesContainer .chart .chart-container canvas {
+  height: 300px;
+  width: 300px;
 }
 
 .chart {
-  width: 500px;
+  width: 100%;
 }
 
 /* Form Container */
@@ -136,9 +150,14 @@
   border: 1px solid #a6c9ac;
   padding: 30px;
   background-color: white;
+  min-height: 500px;
+  height: 80%;
   max-width: 600px;
+  width: 50%;
+  min-width: 300px;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
 #closeFormProposals {
@@ -363,6 +382,7 @@
   cursor: pointer;
   transition: background-color 0.1s ease-in-out;
   font-size: 16px;
+  padding: 8px;
 }
 
 #submitProposal:hover {

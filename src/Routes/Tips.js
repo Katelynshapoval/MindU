@@ -31,12 +31,14 @@ function Tips() {
     id: null,
     Name: "",
     Description: "",
+    Category: "",
   });
 
   const [newTip, setNewTip] = useState({
     Name: "",
     Description: "",
     Creator: "",
+    Category: "",
   });
 
   const [editingTipId, setEditingTipId] = useState(null);
@@ -126,8 +128,12 @@ function Tips() {
   // Handle tip input changes
   const handleTipInputChange = (e, setTip) => {
     const { name, value } = e.target;
-    setTip((prev) => ({ ...prev, [name]: value }));
+    setTip((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
   // Like tips
   const likeAnyTip = async (tip, collectionName) => {
     let newLikes = tip.likes.includes(uid)
@@ -179,7 +185,7 @@ function Tips() {
           likes: [],
         });
       }
-      setNewTip({ Name: "", Description: "", Creator: "" });
+      setNewTip({ Name: "", Description: "", Category: "", Creator: "" });
     } catch (error) {
       console.error("Error adding/updating tip:", error);
     }
@@ -187,7 +193,7 @@ function Tips() {
 
   const handleAddOrUpdateProTip = async (e) => {
     e.preventDefault();
-    if (!editingProTip.Name || !editingProTip.Description)
+    if (!editingProTip.Name || !editingProTip.Description || !newTip.Category)
       return alert("Por favor, rellena todos los campos.");
 
     try {
@@ -381,7 +387,10 @@ function Tips() {
           {(showUserTips ? tips : tips.slice(0, uid ? 2 : 3)).map((tip) => (
             <div key={tip.id} className="tipCard">
               <div className="tipCardText">
-                <h2>{tip.Name}</h2>
+                <div>
+                  <h2>{tip.Name}</h2>
+                  <p>{tip.Category}</p>
+                </div>
                 <p>{tip.Description}</p>
               </div>
               <div className="tipCardButtons">
@@ -457,6 +466,27 @@ function Tips() {
                   }}
                   id="textareaTip"
                 ></textarea>
+                <select
+                  id="selectTip"
+                  name="Category"
+                  value={newTip.Category}
+                  onChange={(e) => handleTipInputChange(e, setNewTip)}
+                >
+                  <option value="" disabled>
+                    Categoría
+                  </option>
+                  <option value="Bienestar emocional">
+                    Bienestar Emocional
+                  </option>
+                  <option value="Relaciones">Relaciones</option>
+                  <option value="Productividad">Productividad</option>
+                  <option value="Autoestima">Autoestima </option>
+                  <option value="Otro">Otro </option>
+                </select>
+                {/* Submit Button */}
+                <button type="submit" id="submitFormTip">
+                  {editingTipId ? "Guardar Cambios" : "Añadir Tip"}
+                </button>
               </form>
             </div>
           )}

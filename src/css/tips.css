@@ -163,14 +163,18 @@ body {
 }
 
 .addTip form textarea {
-  min-width: 100%;
-  max-width: 100%;
-  min-height: 60%;
-  max-height: 60%;
+  height: 40%;
+  width: 100%;
+  resize: none;
+}
+
+.addTip h2 {
+  margin: 0;
 }
 
 #inputTip,
-#textareaTip {
+#textareaTip,
+#selectTip {
   padding: 6px 12px;
   font-size: 16px;
   font-weight: 400;
@@ -185,12 +189,59 @@ body {
 }
 
 #inputTip:focus,
-#textareaTip:focus {
+#textareaTip:focus,
+#selectTip:focus {
   color: #212529;
   background-color: #fff;
   border-color: #88ab8e;
   outline: 0;
   box-shadow: 0 0 0 0.25rem #88ab8e54;
+}
+
+#submitFormTip {
+  align-items: center;
+  appearance: none;
+  background-color: #fcfcfd;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  /* height: 48px; */
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  width: 100%;
+  padding: 8px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow, transform;
+  /* font-size: 18px; */
+}
+
+#submitFormTip:focus {
+  box-shadow: #d6d6e7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+}
+
+#submitFormTip:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #d6d6e7 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+#submitFormTip:active {
+  box-shadow: #d6d6e7 0 3px 7px inset;
+  transform: translateY(2px);
 }
 
 /* Comments */

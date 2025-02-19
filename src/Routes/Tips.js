@@ -278,6 +278,7 @@ function Tips() {
         <h2
           onClick={() => setShowProTips(!showProTips)}
           className="dropdownTitle"
+          id="professionalHeader"
         >
           Tips de profesionales{" "}
           {showProTips ? <FaCaretDown /> : <FaCaretRight />}

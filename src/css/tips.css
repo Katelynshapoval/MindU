@@ -59,6 +59,11 @@ body {
   justify-content: center;
   gap: 4px;
 }
+
+#professionalHeader {
+  margin-bottom: 30px;
+}
+
 .filterContainer {
   display: flex;
   flex-direction: column;

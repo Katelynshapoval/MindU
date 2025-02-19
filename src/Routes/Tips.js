@@ -27,6 +27,7 @@ function Tips() {
   const [showUserTips, setShowUserTips] = useState(false);
   const [admin, setAdmin] = useState(false);
   const [proTips, setProTips] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [editingProTip, setEditingProTip] = useState({
     id: null,
     Name: "",
@@ -50,6 +51,10 @@ function Tips() {
     });
     return () => unsubscribeAuth();
   });
+  const filteredTips = selectedCategory
+    ? tips.filter((tip) => tip.Category === selectedCategory)
+    : tips;
+
   const professionalTips = [
     {
       Name: "Snacks de movimiento",
@@ -383,8 +388,27 @@ function Tips() {
         >
           Tips de usuarios {showUserTips ? <FaCaretDown /> : <FaCaretRight />}
         </h2>
+        <div className="filterContainer">
+          <label htmlFor="categoryFilter">Filtrar por categoría: </label>
+          <select
+            id="categoryFilter"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="">Todas</option>
+            <option value="Bienestar emocional">Bienestar Emocional</option>
+            <option value="Relaciones">Relaciones</option>
+            <option value="Productividad">Productividad</option>
+            <option value="Autoestima">Autoestima</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
         <div className="tipCardContainer">
-          {(showUserTips ? tips : tips.slice(0, uid ? 2 : 3)).map((tip) => (
+          {(showUserTips
+            ? filteredTips
+            : filteredTips.slice(0, uid ? 2 : 3)
+          ).map((tip) => (
             <div key={tip.id} className="tipCard">
               <div className="tipCardText">
                 <div>

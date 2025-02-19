@@ -53,11 +53,26 @@ body {
 }
 
 .tipSection h2 {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
+}
+.filterContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filterContainer select {
+  width: 20%;
+  text-align: center;
+  min-width: 200px;
+  max-width: 400px;
 }
 
 .tipCard {
@@ -79,8 +94,17 @@ body {
 .tipCard .tipCardText {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allow this container to take available space */
+  flex-grow: 1;
   gap: 45px;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.tipCardText h2,
+.tipCardText p {
+  white-space: normal;
+  word-break: break-word;
 }
 
 .tipCard .tipCardText p {
@@ -89,10 +113,11 @@ body {
   flex-grow: 1;
 }
 
-.tipCard .tipCardText h2 {
+.tipCard .tipCardText #headerCard {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   height: 20%;
 }
 
@@ -146,8 +171,6 @@ body {
   color: red;
 }
 
-#likesTip button
-
 /* Add Tip Form Styles */
 .addTip {
   display: flex;
@@ -174,7 +197,8 @@ body {
 
 #inputTip,
 #textareaTip,
-#selectTip {
+#selectTip,
+#categoryFilter {
   padding: 6px 12px;
   font-size: 16px;
   font-weight: 400;
@@ -190,7 +214,8 @@ body {
 
 #inputTip:focus,
 #textareaTip:focus,
-#selectTip:focus {
+#selectTip:focus,
+#categoryFilter:focus {
   color: #212529;
   background-color: #fff;
   border-color: #88ab8e;

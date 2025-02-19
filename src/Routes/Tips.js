@@ -151,7 +151,7 @@ function Tips() {
   // Add or update tip
   const handleAddOrUpdateTip = async (e) => {
     e.preventDefault();
-    if (!newTip.Name || !newTip.Description) {
+    if (!newTip.Name || !newTip.Description || !newTip.Category) {
       alert("Por favor, rellena todos los campos.");
       return;
     }
@@ -198,7 +198,7 @@ function Tips() {
 
   const handleAddOrUpdateProTip = async (e) => {
     e.preventDefault();
-    if (!editingProTip.Name || !editingProTip.Description || !newTip.Category)
+    if (!editingProTip.Name || !editingProTip.Description)
       return alert("Por favor, rellena todos los campos.");
 
     try {
@@ -357,6 +357,7 @@ function Tips() {
                   maxLength={30}
                   onChange={(e) => handleTipInputChange(e, setEditingProTip)}
                   id="inputTip"
+                  required
                 />
                 <textarea
                   name="Description"
@@ -371,6 +372,7 @@ function Tips() {
                     }
                   }}
                   id="textareaTip"
+                  required
                 ></textarea>
               </form>
             </div>
@@ -411,7 +413,7 @@ function Tips() {
           ).map((tip) => (
             <div key={tip.id} className="tipCard">
               <div className="tipCardText">
-                <div>
+                <div id="headerCard">
                   <h2>{tip.Name}</h2>
                   <p>{tip.Category}</p>
                 </div>
@@ -475,6 +477,7 @@ function Tips() {
                   maxLength={30}
                   onChange={(e) => handleTipInputChange(e, setNewTip)}
                   id="inputTip"
+                  required
                 />
                 <textarea
                   name="Description"
@@ -489,12 +492,14 @@ function Tips() {
                     }
                   }}
                   id="textareaTip"
+                  required
                 ></textarea>
                 <select
                   id="selectTip"
                   name="Category"
                   value={newTip.Category}
                   onChange={(e) => handleTipInputChange(e, setNewTip)}
+                  required
                 >
                   <option value="" disabled>
                     Categoría

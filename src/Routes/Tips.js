@@ -360,7 +360,9 @@ function Tips() {
                         <MdComment size={20} />
                         {commentCounts[tip.id] > 0 && (
                           <span className="commentCount">
-                            {commentCounts[tip.id]}
+                            {commentCounts[tip.id] > 5
+                              ? "5+"
+                              : commentCounts[tip.id]}
                           </span>
                         )}
                       </div>

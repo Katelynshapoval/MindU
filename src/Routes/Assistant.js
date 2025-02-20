@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { FaCircleArrowUp } from "react-icons/fa6";
 import "../css/assistant.css";
+import DOMPurify from "dompurify"; // Sanitize HTML, prevent from running scripts
 
 function Assistant() {
   const [value, setValue] = useState("");
@@ -112,6 +113,27 @@ function Assistant() {
     new Set(previousChats.map((previousChat) => previousChat.title))
   );
 
+  // Function to parse and render messages
+  const parseMessage = (messageContent) => {
+    // Convert **text** to bold
+    const boldText = messageContent.replace(
+      /\*\*(.*?)\*\*/g,
+      "<strong>$1</strong>"
+    );
+
+    // Convert URLs to clickable links
+    const linkifiedText = boldText.replace(
+      /(https?:\/\/[^\s]+)/g,
+      (url) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+    );
+
+    // Sanitize the final HTML to prevent XSS attacks
+    const sanitizedContent = DOMPurify.sanitize(linkifiedText);
+
+    return sanitizedContent;
+  };
+
   return (
     <div className="assistant">
       {/* <section className="side-bar-assistant">
@@ -136,7 +158,11 @@ function Assistant() {
               <p className="role">
                 {chatMessage.role === "user" ? "Tú" : "Anima"}
               </p>
-              <p>{chatMessage.content}</p>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: parseMessage(chatMessage.content),
+                }}
+              ></p>
             </li>
           ))}
           {isSubmitting && (

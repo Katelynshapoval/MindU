@@ -167,7 +167,11 @@ function Proposals() {
         <h1>Propuestas de Mejora </h1>
         <p>
           Comparte tus ideas para mejorar el bienestar emocional en distintos
-          ámbitos. Tu voz puede marcar la diferencia.
+          ámbitos. Tu voz puede marcar la diferencia. <br />{" "}
+          <b>
+            Todas las respuestas obtenidas del siguiente formulario pueden ser
+            visualizadas abajo.
+          </b>
         </p>
         {hasSubmitted && !admin ? (
           <p>

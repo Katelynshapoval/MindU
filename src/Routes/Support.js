@@ -165,7 +165,7 @@ function Support() {
                 <AiOutlineClose />
               </button>
             </div>
-            <div className="field">
+            <div className="field" style={{ display: "none" }}>
               <label htmlFor="email">Correo</label>
               <input
                 id="email"

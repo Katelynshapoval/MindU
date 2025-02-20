@@ -102,6 +102,10 @@ body {
   padding: 20px;
   margin: 20px 0;
 }
+.loading-message {
+  font-style: italic;
+  color: gray;
+}
 .feed p {
   color: rgba(0, 0, 0, 0.8);
   font-size: 14px;

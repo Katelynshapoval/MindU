@@ -78,12 +78,13 @@ function Navbar({ user }) {
             style={{ height: "30px" }}
             id="logoNavbar"
             src="./images/logos/textWhite.png"
+            onClick={() => navigate("/")}
             alt="Logo"
           />
           {user ? (
             <div className="logOut" onClick={handleLogout}>
               <span style={{ display: "inline-block", textAlign: "center" }}>
-                Salir <br /> {admin ? "(admin)" : ""}
+                Salir <br /> {admin ? "(admin)" : user.displayName}
               </span>
               <IoIcons.IoIosLogOut />
             </div>

@@ -139,6 +139,12 @@ function Assistant() {
               <p>{chatMessage.content}</p>
             </li>
           ))}
+          {isSubmitting && (
+            <li className="loading-message">
+              <p className="role">Anima</p>
+              <p>Pensando...</p>
+            </li>
+          )}
           <div ref={scrollToEnd}></div> {/* The scroll reference */}
         </ul>
         <div className="bottom-section">

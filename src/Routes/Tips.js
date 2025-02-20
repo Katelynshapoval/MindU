@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase/firebase";
+import { useNavigate } from "react-router-dom"; // For navigation
+
 import {
   collection,
   addDoc,
@@ -16,7 +18,7 @@ import {
 import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import "../css/tips.css";
 import Comments from "./TipsComments";
-import { FaCaretDown, FaCaretRight, FaHeart } from "react-icons/fa";
+import { FaCaretDown, FaCaretRight, FaHeart, FaArrowUp } from "react-icons/fa";
 import { admins } from "../firebase/firebase";
 import { Timestamp } from "firebase/firestore";
 
@@ -28,6 +30,7 @@ function Tips() {
   const [admin, setAdmin] = useState(false);
   const [proTips, setProTips] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [commentCounts, setCommentCounts] = useState({});
   const [editingProTip, setEditingProTip] = useState({
     id: null,
     Name: "",
@@ -54,6 +57,30 @@ function Tips() {
   const filteredTips = selectedCategory
     ? tips.filter((tip) => tip.Category === selectedCategory)
     : tips;
+  useEffect(() => {
+    const commentCountsMap = {};
+    const unsubscribeMap = {};
+
+    const setupCommentListener = (tipId) => {
+      const commentsQuery = query(
+        collection(db, "comments"),
+        where("tipId", "==", tipId)
+      );
+
+      unsubscribeMap[tipId] = onSnapshot(commentsQuery, (snapshot) => {
+        commentCountsMap[tipId] = snapshot.size;
+        setCommentCounts({ ...commentCountsMap });
+      });
+    };
+
+    [...tips, ...proTips].forEach((tip) => {
+      setupCommentListener(tip.id);
+    });
+
+    return () => {
+      Object.values(unsubscribeMap).forEach((unsubscribe) => unsubscribe());
+    };
+  }, [tips, proTips]); // Runs when proTips and tips update
 
   const professionalTips = [
     {
@@ -191,6 +218,7 @@ function Tips() {
         });
       }
       setNewTip({ Name: "", Description: "", Category: "", Creator: "" });
+      setSelectedCategory("");
     } catch (error) {
       console.error("Error adding/updating tip:", error);
     }
@@ -227,6 +255,7 @@ function Tips() {
     if (window.confirm("¿Seguro que quieres borrar este tip?")) {
       await deleteDoc(doc(db, "professionalTips", id));
     }
+    setEditingProTip({ id: null, Name: "", Description: "" });
   };
 
   // Delete a tip
@@ -254,6 +283,8 @@ function Tips() {
     } catch (error) {
       console.error("Error deleting tip:", error);
     }
+    setEditingTipId(null);
+    setNewTip({ Name: "", Description: "", Creator: "" });
   };
 
   // Edit a tip
@@ -272,7 +303,6 @@ function Tips() {
   return (
     <div className="tips">
       <h1>Tips</h1>
-
       {/* Professional Tips Section */}
       <div className="tipSection">
         <h2
@@ -316,32 +346,43 @@ function Tips() {
                         </button>
                       </>
                     )}
-                    <button
+                    {/* <button
                       className="iconTip"
                       onClick={() => setOpenedComment(tip)}
                     >
                       <MdComment size={20} />
+                    </button> */}
+                    <button
+                      className="iconTip"
+                      onClick={() => setOpenedComment(tip)}
+                    >
+                      <div style={{ position: "relative" }}>
+                        <MdComment size={20} />
+                        {commentCounts[tip.id] > 0 && (
+                          <span className="commentCount">
+                            {commentCounts[tip.id]}
+                          </span>
+                        )}
+                      </div>
                     </button>
                   </div>
-                  {!admin && (
-                    <div
-                      class={`likesTip ${
-                        tip.likes.includes(uid) ? "liked" : ""
-                      }`}
+                  <div
+                    class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
+                  >
+                    <p>{tip.likes?.length || 0}</p>
+                    <button
+                      className="iconTip"
+                      onClick={() => {
+                        admin
+                          ? alert("No puedes dar like.")
+                          : uid
+                          ? likeAnyTip(tip, "professionalTips")
+                          : alert("Tienes que iniciar sesión.");
+                      }}
                     >
-                      <p>{tip.likes?.length || 0}</p>
-                      <button
-                        className="iconTip"
-                        onClick={() => {
-                          uid
-                            ? likeAnyTip(tip, "professionalTips")
-                            : alert("Tienes que iniciar sesión.");
-                        }}
-                      >
-                        <FaHeart size={20} />
-                      </button>
-                    </div>
-                  )}
+                      <FaHeart size={20} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )
@@ -363,7 +404,7 @@ function Tips() {
                 <textarea
                   name="Description"
                   placeholder="Descripción"
-                  maxLength={150}
+                  maxLength={110}
                   value={editingProTip.Description}
                   onChange={(e) => handleTipInputChange(e, setEditingProTip)}
                   onKeyDown={(e) => {
@@ -375,6 +416,9 @@ function Tips() {
                   id="textareaTip"
                   required
                 ></textarea>
+                <button type="submit" id="submitFormTip">
+                  {editingTipId ? "Guardar Cambios" : "Añadir Tip"}
+                </button>
               </form>
             </div>
           )}
@@ -443,26 +487,33 @@ function Tips() {
                     className="iconTip"
                     onClick={() => setOpenedComment(tip)}
                   >
-                    <MdComment size={20} />
+                    <div style={{ position: "relative" }}>
+                      <MdComment size={20} />
+                      {commentCounts[tip.id] > 0 && (
+                        <span className="commentCount">
+                          {commentCounts[tip.id]}
+                        </span>
+                      )}
+                    </div>
                   </button>
                 </div>
-                {!admin && (
-                  <div
-                    class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
+                <div
+                  class={`likesTip ${tip.likes.includes(uid) ? "liked" : ""}`}
+                >
+                  <p>{tip.likes?.length || 0}</p>
+                  <button
+                    className="iconTip"
+                    onClick={() => {
+                      admin
+                        ? alert("No puedes dar like.")
+                        : uid
+                        ? likeAnyTip(tip, "tips")
+                        : alert("Tienes que iniciar sesión.");
+                    }}
                   >
-                    <p>{tip.likes?.length || 0}</p>
-                    <button
-                      className="iconTip"
-                      onClick={() => {
-                        uid
-                          ? likeAnyTip(tip, "tips")
-                          : alert("Tienes que iniciar sesión.");
-                      }}
-                    >
-                      <FaHeart size={20} />
-                    </button>
-                  </div>
-                )}
+                    <FaHeart size={20} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -475,7 +526,7 @@ function Tips() {
                   name="Name"
                   placeholder="Título"
                   value={newTip.Name}
-                  maxLength={30}
+                  maxLength={20}
                   onChange={(e) => handleTipInputChange(e, setNewTip)}
                   id="inputTip"
                   required
@@ -483,7 +534,7 @@ function Tips() {
                 <textarea
                   name="Description"
                   placeholder="Descripción"
-                  maxLength={150}
+                  maxLength={100}
                   value={newTip.Description}
                   onChange={(e) => handleTipInputChange(e, setNewTip)}
                   onKeyDown={(e) => {

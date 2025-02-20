@@ -5,6 +5,11 @@
   font-family: Arial-Rounded-Light, sans-serif;
 }
 
+.App {
+  min-width: 300px;
+  min-height: 300px;
+}
+
 /* Fonts */
 @font-face {
   font-family: Arial-Rounded;
@@ -45,6 +50,15 @@
   align-items: center;
 }
 
+.signInGoogle {
+  cursor: pointer;
+  padding: 30px;
+  border: none;
+}
+
+.signInGoogle:hover {
+  opacity: 0.8;
+}
 .menu-bars {
   /* margin-left: 2rem; */
   font-size: 2rem;
@@ -61,6 +75,10 @@
   border: none;
   background-color: transparent;
   display: inline;
+}
+
+#logoNavbar:hover {
+  cursor: pointer;
 }
 
 #logoNavbar {
@@ -211,6 +229,7 @@ span {
   justify-content: center;
   align-items: center;
   vertical-align: middle;
+  padding: 10px;
 }
 
 .account button {

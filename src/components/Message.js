@@ -27,10 +27,12 @@ const Message = ({ message, onEdit }) => {
   });
   // Function to delete the message from Firestore
   const deleteMessage = async () => {
-    try {
-      await deleteDoc(doc(db, "messages", message.id)); // Delete message by id
-    } catch (error) {
-      console.error("Error deleting message: ", error);
+    if (window.confirm("¿Seguro que quieres borrar este mensaje?")) {
+      try {
+        await deleteDoc(doc(db, "messages", message.id)); // Delete message by id
+      } catch (error) {
+        console.error("Error deleting message: ", error);
+      }
     }
   };
 

@@ -114,6 +114,12 @@ function Home() {
   // Function to handle form submission and add article to Firebase
   const handleAddArticleSubmit = async (e) => {
     e.preventDefault();
+    const urlPattern =
+      /^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,6}(\/[^\s]*)?$/;
+    if (!urlPattern.test(articleFormData.link)) {
+      alert("Por favor, ingresa una URL válida.");
+      return;
+    }
     try {
       await addDoc(collection(db, "articles"), {
         title: articleFormData.title,

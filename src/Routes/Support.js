@@ -5,17 +5,16 @@ import { auth, db } from "../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 function Support() {
-  const [openIndex, setOpenIndex] = useState(null);
+  // Form state
   const [showForm, setShowForm] = useState(false);
-  const formRef = useRef(null); // Reference for the form
-  const problemRefs = useRef([]); // Refs for the problem descriptions
-  const [articleFormData, setArticleFormData] = useState({
-    title: "",
-    description: "",
-    link: "",
-  });
-
+  const formRef = useRef(null);
   const user = auth.currentUser;
+
+  // Problem dropdown state
+  const [openIndex, setOpenIndex] = useState(null);
+  const problemRefs = useRef([]);
+
+  // Form data state
   const [formData, setFormData] = useState({
     email: user?.email || "",
     problem: "",
@@ -23,6 +22,7 @@ function Support() {
     description: "",
   });
 
+  // Problem list
   const problems = [
     {
       name: "No puedo usar el chat",
@@ -40,51 +40,45 @@ function Support() {
     },
   ];
 
+  // Toggle problem descriptions
   const toggleDescription = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const handleClickOutside = (event) => {
-    // Check if the click is outside both the form and any problem description
-    if (formRef.current && formRef.current.contains(event.target)) {
-      return; // Prevents closing the form when clicking inside the form
-    }
-    if (problemRefs.current.some((ref) => ref && ref.contains(event.target))) {
-      return; // Prevents closing problem description if clicked inside the description
-    }
-    // If the click is outside of both, close the problem description
-    setOpenIndex(null);
-    setShowForm(false);
-  };
-
+  // Close dropdowns when clicking outside
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        (formRef.current && formRef.current.contains(event.target)) ||
+        problemRefs.current.some((ref) => ref && ref.contains(event.target))
+      ) {
+        return;
+      }
+      setOpenIndex(null);
+      setShowForm(false);
+    };
+
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   // Handle form field changes
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
-  // Handle file input separately
+  // Handle file upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const validImageTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-      ];
-      if (!validImageTypes.includes(file.type)) {
-        alert("Por favor, sube solo imágenes (JPG, PNG, GIF, WEBP).");
-        e.target.value = ""; // Reset file input
-        return;
-      }
-      setFormData((prev) => ({ ...prev, photo: file }));
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      alert("Por favor, sube solo imágenes (JPG, PNG, GIF, WEBP).");
+      e.target.value = "";
+      return;
     }
+    setFormData((prev) => ({ ...prev, photo: file }));
   };
 
   // Handle form submission
@@ -96,7 +90,7 @@ function Support() {
         email: formData.email,
         problem: formData.problem,
         description: formData.description,
-        photo: formData.foto ? formData.foto.name : "", // Just storing the filename for now
+        photo: formData.photo ? formData.photo.name : "",
         timestamp: serverTimestamp(),
         userId: user?.uid || "anonymous",
       });
@@ -106,7 +100,7 @@ function Support() {
       setFormData({
         email: user?.email || "",
         problem: "",
-        foto: null,
+        photo: null,
         description: "",
       });
     } catch (error) {

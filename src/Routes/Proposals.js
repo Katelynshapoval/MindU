@@ -14,12 +14,13 @@ import SentimentSchoolPieChart from "../components/SentimentSchoolPieChart"; // 
 import ResourcesBarChart from "../components/ResourcesBarChart"; // Bar chart for resources
 import { fetchFeedbackData } from "../components/processData"; // Fetch function
 import { MdEdit, MdDelete, MdComment } from "react-icons/md";
-import { admins } from "../firebase/firebase"; // Admin list
+import { getAdminEmails } from "../components/getAdminEmails"; // Import function
 
 function Proposals() {
   // User-related states
   const [uid, setUid] = useState(null); // User ID
   const [admin, setAdmin] = useState(false); // Admin status
+  const [admins, setAdmins] = useState([]); // Store admin emails
 
   // Form input states
   const [schoolType, setSchoolType] = useState(""); // School type selection
@@ -57,12 +58,20 @@ function Proposals() {
     setExtraComments("");
   };
 
-  // Check if user is logged in and if it's admin
+  // Fetch admin emails on mount
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      const adminList = await getAdminEmails();
+      setAdmins(adminList);
+    };
+    fetchAdmins();
+  }, []);
+
+  // Check if user is logged in and if they are an admin
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       if (user) {
         setUid(user.uid);
-        // Set admin to true if the email is in the list of admin emails
         setAdmin(admins.includes(user.email));
       } else {
         setUid(null);
@@ -71,7 +80,7 @@ function Proposals() {
     });
 
     return () => unsubscribeAuth();
-  }, []);
+  }, [admins]); // Runs when `admins` updates
 
   // Fetch feedback data for charts
   const fetchFeedbackData = async () => {

@@ -1,4 +1,4 @@
-import { React, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   query,
   collection,
@@ -8,50 +8,72 @@ import {
   doc,
   setDoc,
   getDoc,
-  deleteDoc,
 } from "firebase/firestore";
 import { db, auth } from "../firebase/firebase.js";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
-import { admins } from "../firebase/firebase";
+import { getAdminEmails } from "../components/getAdminEmails";
 
 const ChatBox = () => {
-  const [messages, setMessages] = useState([]); // State to hold the list of messages
-  const [editMessageData, setEditMessageData] = useState(null); // State for the message being edited
-  const [nickname, setNickname] = useState("Anonymous"); // Default to "Anonymous"
-  const scroll = useRef(); // Reference to scroll to the bottom of the chat
+  // User-related states
   const [uid, setUid] = useState(null);
+  const [admins, setAdmins] = useState([]);
   const [admin, setAdmin] = useState(false);
 
-  // Authentication state
+  // Chat-related states
+  const [messages, setMessages] = useState([]);
+  const [editMessageData, setEditMessageData] = useState(null);
+  const scroll = useRef(); // Ref to scroll to the bottom
+
+  // Nickname-related states
+  const [nickname, setNickname] = useState("Anonymous");
+
+  // Fetch admin emails on mount
   useEffect(() => {
-    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      setUid(user ? user.uid : null);
-      if (user) {
-        // Fetch the nickname from Firestore when user logs in
-        fetchNickname(user.uid);
-      }
-    });
-    return () => unsubscribeAuth();
+    const fetchAdmins = async () => {
+      const adminList = await getAdminEmails();
+      setAdmins(adminList);
+    };
+    fetchAdmins();
   }, []);
 
-  // Fetch nickname from Firestore
-  const fetchNickname = async (userUid) => {
-    if (admin) {
+  // Check if logged-in user is an admin
+  useEffect(() => {
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUid(user.uid);
+        const isAdmin = admins.includes(user.email);
+        setAdmin(isAdmin);
+        fetchNickname(user.uid, isAdmin); // Fetch nickname
+      } else {
+        setUid(null);
+        setAdmin(false);
+        setNickname("Anonymous");
+      }
+    });
+
+    return () => unsubscribeAuth();
+  }, [admins]); // Runs when `admins` updates
+
+  // Fetch nickname from Firestore (or set to "Admin" if user is admin)
+  const fetchNickname = async (userUid, isAdmin) => {
+    if (isAdmin) {
       setNickname("Admin");
       return;
     }
+
     const nicknameDocRef = doc(db, "nicknames", userUid);
     const nicknameDoc = await getDoc(nicknameDocRef);
+
     if (nicknameDoc.exists()) {
       setNickname(nicknameDoc.data().nickname);
     } else {
-      setNickname("Anonymous"); // Set to "Anonymous" if no nickname found
-      await setDoc(nicknameDocRef, { nickname: "Anonymous" }); // Create entry in Firestore
+      setNickname("Anonymous"); // Set to default
+      await setDoc(nicknameDocRef, { nickname: "Anonymous" }); // Save to Firestore
     }
   };
 
-  // Query to fetch messages ordered by creation time, limiting to 50
+  // Fetch messages from Firestore in real-time
   useEffect(() => {
     const q = query(
       collection(db, "messages"),
@@ -59,56 +81,45 @@ const ChatBox = () => {
       limit(50)
     );
 
-    // Set up real-time listener for Firestore data changes
-    const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
-      const fetchedMessages = [];
-      QuerySnapshot.forEach((doc) => {
-        // Push each document data to fetchedMessages array
-        fetchedMessages.push({ ...doc.data(), id: doc.id });
-      });
-      setMessages(fetchedMessages); // Update state with sorted messages
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const fetchedMessages = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setMessages(fetchedMessages);
     });
 
-    // Cleanup listener on component unmount
     return () => unsubscribe();
-  }, []); // Empty dependency array means this runs once when component mounts
+  }, []);
 
-  // Effect to scroll to the bottom when messages update
+  // Scroll to the bottom when messages update
   useEffect(() => {
     if (scroll.current) {
       scroll.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]); // Depend on messages state
+  }, [messages]);
 
-  useEffect(() => {
-    // Check if admin is logged in
-    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      setAdmin(user ? admins.includes(user.email) : false);
-    });
-    return () => unsubscribeAuth();
-  });
-
-  // Function to handle message editing
+  // Handle message editing
   const handleEditMessage = (message) => {
-    setEditMessageData(message); // Set message data to be edited
+    setEditMessageData(message);
   };
 
-  // Function to handle nickname change
+  // Handle nickname change
   const handleNicknameChange = (e) => {
-    setNickname(e.target.value); // Update nickname state
+    setNickname(e.target.value);
   };
 
-  // Save nickname to Firestore when "Enter" is pressed
+  // Save nickname to Firestore on "Enter"
   const handleNicknameKeyPress = async (e) => {
     if (e.key === "Enter" && nickname.trim() !== "") {
-      e.preventDefault(); // Prevent form submission
+      e.preventDefault();
+      if (nickname === "Admin") {
+        alert("No puedes poner ese nickname.");
+        return;
+      }
 
-      // Update nickname in Firestore for the user
       const nicknameDocRef = doc(db, "nicknames", uid);
       await setDoc(nicknameDocRef, { nickname }, { merge: true });
-
-      // Save nickname to localStorage for persistence
-      localStorage.setItem("nickname", nickname);
 
       alert(`Tu nombre ha sido cambiado a ${nickname}.`);
     }
@@ -127,6 +138,7 @@ const ChatBox = () => {
           onKeyDown={handleNicknameKeyPress} // Detect Enter key press to save nickname
           placeholder="Anonymous"
           disabled={admin}
+          maxLength={20}
         />
       </form>
 

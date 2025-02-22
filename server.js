@@ -1,3 +1,4 @@
+// Works
 const PORT = 8000;
 const express = require("express");
 const cors = require("cors");
@@ -5,7 +6,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 require("dotenv").config();
-const API_KEY = process.env.OPENAI_API_KEY;
+const functions = require("firebase-functions");
+const API_KEY = functions.config().openai.key; // ✅ Retrieve API key from Firebase
 
 // Store conversation history
 let conversationHistory = [];
@@ -16,8 +18,13 @@ app.post("/completions", async (req, res) => {
   // Ensure system message is always at the start
   const systemMessage = {
     role: "system",
-    content:
-      "Eres una terapeuta amigable y comprensiva. Hablas de manera relajada y cercana, como una amiga de confianza, pero con conocimiento en salud mental. Escuchas con atención, haces preguntas útiles y das consejos prácticos sin sonar demasiado formal. Tu objetivo es ayudar con empatía y buen ánimo.",
+    content: `Eres una terapeuta amigable y comprensiva. Hablas de manera
+    relajada y cercana,
+    como una amiga de confianza, pero con conocimiento en salud mental.
+    Escuchas con atención,
+    haces preguntas útiles y das consejos
+    prácticos sin sonar demasiado formal.
+    Tu objetivo es ayudar con empatía y buen ánimo.`,
   };
 
   // Merge system message with conversation history

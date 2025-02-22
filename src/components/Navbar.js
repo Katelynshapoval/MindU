@@ -9,16 +9,17 @@ import * as IoIcons from "react-icons/io";
 import { getAuth, signOut } from "firebase/auth";
 import SignIn from "../components/SignIn";
 import { useNavigate } from "react-router-dom"; // For navigation
-import { admins } from "../firebase/firebase";
+import { getAdminEmails } from "./getAdminEmails"; // Import function
 
 function Navbar({ user }) {
   const [sidebar, setSidebar] = useState(false);
   const sidebarRef = useRef(null); // Reference for sidebar
-  const [admin, setAdmin] = useState(false);
+  const [admin, setAdmin] = useState(false); // Check if user is an admin
 
   const showSidebar = () => setSidebar(!sidebar);
   const auth = getAuth();
   const navigate = useNavigate();
+  const [admins, setAdmins] = useState([]); // Store list of admin emails
 
   const handleLogout = async () => {
     try {
@@ -51,12 +52,22 @@ function Navbar({ user }) {
   }, []);
 
   useEffect(() => {
-    // Check if admin is logged in
-    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      setAdmin(user ? admins.includes(user.email) : false);
-    });
-    return () => unsubscribeAuth();
-  });
+    // Fetch admin emails once on component mount
+    const fetchAdmins = async () => {
+      const adminList = await getAdminEmails();
+      setAdmins(adminList);
+    };
+    fetchAdmins();
+  }, []);
+
+  useEffect(() => {
+    // Check if user is an admin whenever user or admins list updates
+    if (user) {
+      setAdmin(admins.includes(user.email));
+    } else {
+      setAdmin(false);
+    }
+  }, [user, admins]); // Runs when `user` or `admins` changes
 
   return (
     <>

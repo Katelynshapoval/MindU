@@ -12,17 +12,25 @@ import { AiOutlineClose } from "react-icons/ai";
 import { FaCircleArrowUp } from "react-icons/fa6";
 
 function Comments({ tip, onClose }) {
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
+  // State management
+  const [comments, setComments] = useState([]); // Stores fetched comments
+  const [newComment, setNewComment] = useState(""); // Stores input field value
+  const [uid, setUid] = useState(null); // Stores user ID
+
+  // Refs for UI interactions
   const commentInputRef = useRef(null);
   const commentMenuRef = useRef(null);
-  const [uid, setUid] = useState(null);
-  const scroll = useRef(); // Reference to scroll to the bottom of the chat
+  const scroll = useRef(null);
 
-  // Fetch comments in real-time
+  /** Fetch comments in real-time */
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(collection(db, "comments"), orderBy("createdAt", "asc")),
+    const commentsQuery = query(
+      collection(db, "comments"),
+      orderBy("createdAt", "asc")
+    );
+
+    const unsubscribeComments = onSnapshot(
+      commentsQuery,
       (querySnapshot) => {
         const commentsList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -30,28 +38,27 @@ function Comments({ tip, onClose }) {
         }));
         setComments(commentsList);
       },
-      (error) => {
-        console.error("Error fetching comments:", error);
-      }
+      (error) => console.error("Error fetching comments:", error)
     );
-    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      setUid(user ? user.uid : null);
-    });
+
+    const unsubscribeAuth = auth.onAuthStateChanged((user) =>
+      setUid(user ? user.uid : null)
+    );
 
     return () => {
-      unsubscribe();
+      unsubscribeComments();
       unsubscribeAuth();
     };
   }, []);
 
-  // Effect to scroll to the bottom when messages update
+  /** Scroll to the latest comment */
   useEffect(() => {
     if (scroll.current) {
       scroll.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [comments]); // Depend on messages state
+  }, [comments]);
 
-  // Close comments when clicking outside
+  /** Close comments when clicking outside */
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -65,30 +72,31 @@ function Comments({ tip, onClose }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  // Focus input field when comments open
+  /** Focus input field when comments open */
   useEffect(() => {
-    if (commentInputRef.current) {
-      commentInputRef.current.focus();
-    }
+    commentInputRef.current?.focus();
   }, []);
 
-  // Handle sending comment
+  /** Handle sending comment */
   const sendComment = async (e) => {
     e.preventDefault();
-    if (newComment.trim() === "") {
-      alert("Enter a valid comment");
+    if (!newComment.trim()) {
+      alert("Ingrese un comentario válido.");
       return;
     }
 
-    const { uid } = auth.currentUser;
-    await addDoc(collection(db, "comments"), {
-      text: newComment,
-      createdAt: Timestamp.now(),
-      uid,
-      tipId: tip.id,
-    });
+    try {
+      await addDoc(collection(db, "comments"), {
+        text: newComment,
+        createdAt: Timestamp.now(),
+        uid,
+        tipId: tip.id,
+      });
 
-    setNewComment("");
+      setNewComment(""); // Clear input field after submitting
+    } catch (error) {
+      console.error("Error al enviar el comentario:", error);
+    }
   };
 
   return (

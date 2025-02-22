@@ -3,7 +3,9 @@ import Navbar from "./components/Navbar";
 import { Outlet } from "react-router-dom"; // Import Outlet for child routes
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import firebaseApp from "./firebase/firebase";
+import firebaseApp, { db, auth } from "./firebase/firebase";
+
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 // Define the main layout of the app, including Navbar and Outlet
 function App() {

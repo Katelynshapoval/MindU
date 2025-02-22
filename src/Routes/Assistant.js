@@ -4,111 +4,104 @@ import "../css/assistant.css";
 import DOMPurify from "dompurify"; // Sanitize HTML, prevent from running scripts
 
 function Assistant() {
+  // Message states
   const [value, setValue] = useState("");
   const [message, setMessage] = useState(null);
   const [previousChats, setPreviousChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
   const [chatInputs, setChatInputs] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple submissions
-  const scrollToEnd = useRef(null); // Reference to scroll to the bottom of the chat feed
-  const sendMessageInputRef = useRef(null); // for autofocus
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Refs for scrolling and input autofocus
+  const scrollToEnd = useRef(null);
+  const sendMessageInputRef = useRef(null);
+
+  // Create a new chat session
   const createNewChat = () => {
     setMessage(null);
-    setValue(""); // Clear the input value
+    setValue("");
     setCurrentTitle(null);
   };
 
+  // Handle clicking on a previous chat title
   const handleClick = (uniqueTitle) => {
     setCurrentTitle(uniqueTitle);
-    // Set the input value to the previously stored value for the selected chat
     setValue(chatInputs[uniqueTitle] || "");
   };
 
+  // Fetch assistant response
   const getMessages = async () => {
-    if (isSubmitting) return; // Prevent multiple submissions
-    if (!value.trim()) {
+    if (isSubmitting || !value.trim()) {
       alert("Introduzca un mensaje válido.");
       return;
-    } // Prevent sending empty messages
+    }
 
-    setIsSubmitting(true); // Disable further submissions
-
-    const options = {
-      method: "POST",
-      body: JSON.stringify({
-        message: value,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+    setIsSubmitting(true);
 
     try {
       const response = await fetch(
-        "http://localhost:8000/completions",
-        options
+        "https://us-central1-mindu-app-4f9f4.cloudfunctions.net/api/completions",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: value }),
+        }
       );
+
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
+
       const data = await response.json();
 
-      // Handle new message
-      const newMessage = data.choices[0].message;
+      if (!data.message) throw new Error("Invalid response structure");
 
-      // Set the message and append it to the previous chats
-      setMessage(newMessage);
-
-      // Update previous chats
+      setMessage(data.message);
       setPreviousChats((prevChats) => [
         ...prevChats,
         { title: currentTitle || value, role: "user", content: value },
         {
           title: currentTitle || value,
-          role: newMessage.role,
-          content: newMessage.content,
+          role: "assistant",
+          content: data.message,
         },
       ]);
 
-      // Save the chat input and clear the input field for the current session
-      setChatInputs((prevInputs) => ({
-        ...prevInputs,
-        [currentTitle || value]: "", // Store empty value after sending
-      }));
-
-      setCurrentTitle((prevTitle) => prevTitle || value); // Update the title
-
-      // Clear the value to reset the input
-      setValue(""); // Clear the input field after submitting the message
+      setValue("");
+      setCurrentTitle((prevTitle) => prevTitle || value);
     } catch (error) {
-      console.error(error);
+      console.error("Fetch error:", error);
+      alert("Hubo un problema con la respuesta del asistente.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false); // Re-enable submission after sending
   };
 
+  // Log debugging information
   useEffect(() => {
-    // Debugging logs
     console.log("Current Title:", currentTitle);
     console.log("Value:", value);
     console.log("Message:", message);
     console.log("Previous Chats:", previousChats);
   }, [message, currentTitle]);
 
+  // Scroll to the latest message when messages update
   useEffect(() => {
-    // Scroll to the bottom of the chat feed whenever messages update
     if (scrollToEnd.current) {
       scrollToEnd.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [previousChats]); // Depend on previousChats state to trigger scrolling when a new message is added
+  }, [previousChats]);
 
-  // Autofocus on input
+  // Autofocus input on mount
   useEffect(() => {
     sendMessageInputRef.current.focus();
   }, []);
 
+  // Get the current chat history
   const currentChat = previousChats.filter(
     (previousChat) => previousChat.title === currentTitle
   );
 
+  // Get unique chat titles
   const uniqueTitles = Array.from(
     new Set(previousChats.map((previousChat) => previousChat.title))
   );
@@ -128,10 +121,8 @@ function Assistant() {
         `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
     );
 
-    // Sanitize the final HTML to prevent XSS attacks
-    const sanitizedContent = DOMPurify.sanitize(linkifiedText);
-
-    return sanitizedContent;
+    // Sanitize HTML to prevent XSS attacks
+    return DOMPurify.sanitize(linkifiedText);
   };
 
   return (

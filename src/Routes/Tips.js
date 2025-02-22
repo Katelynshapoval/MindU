@@ -19,7 +19,7 @@ import { MdEdit, MdDelete, MdComment } from "react-icons/md";
 import "../css/tips.css";
 import Comments from "./TipsComments";
 import { FaCaretDown, FaCaretRight, FaHeart, FaArrowUp } from "react-icons/fa";
-import { admins } from "../firebase/firebase";
+import { getAdminEmails } from "../components/getAdminEmails";
 import { Timestamp } from "firebase/firestore";
 
 function Tips() {
@@ -31,6 +31,7 @@ function Tips() {
   const [proTips, setProTips] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [commentCounts, setCommentCounts] = useState({});
+  const [admins, setAdmins] = useState([]);
   const [editingProTip, setEditingProTip] = useState({
     id: null,
     Name: "",
@@ -47,13 +48,20 @@ function Tips() {
 
   const [editingTipId, setEditingTipId] = useState(null);
   const [openedComment, setOpenedComment] = useState(null);
+  // Check if logged-in user is an admin
   useEffect(() => {
-    // Check if admin is logged in
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      setAdmin(user ? admins.includes(user.email) : false);
+      if (user) {
+        setUid(user.uid);
+        setAdmin(admins.includes(user.email));
+      } else {
+        setUid(null);
+        setAdmin(false);
+      }
     });
+
     return () => unsubscribeAuth();
-  });
+  }, [admins]); // Update when `admins` changes
   const filteredTips = selectedCategory
     ? tips.filter((tip) => tip.Category === selectedCategory)
     : tips;
@@ -81,6 +89,15 @@ function Tips() {
       Object.values(unsubscribeMap).forEach((unsubscribe) => unsubscribe());
     };
   }, [tips, proTips]); // Runs when proTips and tips update
+
+  useEffect(() => {
+    // Fetch admin emails on component mount
+    const fetchAdmins = async () => {
+      const adminList = await getAdminEmails();
+      setAdmins(adminList);
+    };
+    fetchAdmins();
+  }, []);
 
   const professionalTips = [
     {

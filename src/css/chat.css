@@ -133,6 +133,7 @@ body {
   margin-left: auto;
   background-color: #fff;
   border-radius: 20px 20px 0 20px;
+  box-shadow: #183b1ee0 0px 5px 15px;
 }
 
 /* Chat Bubble Container */

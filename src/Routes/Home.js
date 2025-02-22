@@ -8,110 +8,75 @@ import {
   collection,
   addDoc,
   serverTimestamp,
-  getDocs,
   onSnapshot,
   doc,
   deleteDoc,
 } from "firebase/firestore";
-import { admins } from "../firebase/firebase";
-import { AiOutlineClose } from "react-icons/ai"; // Import close icon
+import { getAdminEmails } from "../components/getAdminEmails";
+import { AiOutlineClose } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 
 function Home() {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
+  const formRef = useRef(null);
+
+  // Admin states
+  const [admin, setAdmin] = useState(false);
+  const [admins, setAdmins] = useState([]);
+
+  // Article states
+  const [articles, setArticles] = useState([]);
   const [articleFormData, setArticleFormData] = useState({
     title: "",
     description: "",
     link: "",
   });
   const [showAddArticleForm, setShowAddArticleForm] = useState(false);
-  const formRef = useRef(null);
-  const [admin, setAdmin] = useState(false); // Admin status
-  const [articles, setArticles] = useState([]); // State to store articles from Firestore
 
+  // Fetch admin emails on mount
   useEffect(() => {
-    // Check if admin is logged in
+    const fetchAdmins = async () => {
+      const adminList = await getAdminEmails();
+      setAdmins(adminList);
+    };
+    fetchAdmins();
+  }, []);
+
+  // Check if the logged-in user is an admin
+  useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       setAdmin(user ? admins.includes(user.email) : false);
     });
     return () => unsubscribeAuth();
-  });
+  }, [admins]);
 
-  // Real-time listener to fetch articles from Firestore
+  // Real-time listener for Firestore articles
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(db, "articles"),
-      (querySnapshot) => {
-        const articlesData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setArticles(articlesData); // Update state with new articles
-      }
-    );
+    const unsubscribe = onSnapshot(collection(db, "articles"), (snapshot) => {
+      setArticles(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    });
 
-    // Cleanup function to unsubscribe from Firestore listener when component unmounts
     return () => unsubscribe();
   }, []);
 
-  const responsive = {
-    superLargeDesktop: {
-      // the naming can be any, depends on you.
-      breakpoint: { max: 4000, min: 3000 },
-      items: 5,
-    },
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 3,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 600 },
-      items: 2,
-    },
-    mobile: {
-      breakpoint: { max: 600, min: 0 },
-      items: 1,
-    },
-  };
-  // const articles = [
-  //   {
-  //     title: "Ansiedad: Lo que usted debe saber",
-  //     description:
-  //       "Las experiencias negativas en la infancia y la historia familiar tal vez aumenten el riesgo.",
-  //     link: "https://magazine.medlineplus.gov/es/art%C3%ADculo/ansiedad-lo-que-usted-debe-saber/",
-  //   },
-  //   {
-  //     title: "No dormir",
-  //     description:
-  //       "Los lectores escriben sobre los problemas que causa la falta de sueño.",
-  //     link: "https://elpais.com/opinion/2025-02-09/no-dormir.html",
-  //   },
-  //   {
-  //     title: "El silencio mata: suicidio entre los adolescentes",
-  //     description:
-  //       "Los expertos coinciden en que las conductas suicidas y las autolesiones no son el problema.",
-  //     link: "https://elpais.com/sociedad/2025-02-02/el-silencio-mata-como-y-por-que-hablar-del-suicidio-entre-los-adolescentes.html",
-  //   },
-  //   {
-  //     title: "Hay algo peor que sentir emociones oscuras: evitarlas",
-  //     description:
-  //       "Priorizamos los acontecimientos negativos por encima de los positivos, lo cual parece… negativo.",
-  //     link: "https://elpais.com/eps/2025-01-16/hay-algo-peor-que-sentir-emociones-oscuras-evitarlas.html",
-  //   },
-  //   {
-  //     title: "Los contenidos negativos en redes",
-  //     description:
-  //       "Un nuevo estudio concluye que lo que perjudica la salud mental no es tanto el uso de internet como el tipo de información.",
-  //     link: "https://elpais.com/tecnologia/2024-12-17/los-contenidos-negativos-en-redes-afectan-mas-a-las-personas-con-peor-salud-mental.html",
-  //   },
-  // ];
+  // Close the form when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (formRef.current && !formRef.current.contains(e.target)) {
+        setShowAddArticleForm(false);
+      }
+    };
 
-  // Function to handle form input changes
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Handle input changes
   const handleArticleChange = (e) => {
-    const { id, value } = e.target;
-    setArticleFormData((prev) => ({ ...prev, [id]: value }));
+    setArticleFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
-  // Function to handle form submission and add article to Firebase
+
+  // Handle adding an article
   const handleAddArticleSubmit = async (e) => {
     e.preventDefault();
     const urlPattern =
@@ -122,9 +87,7 @@ function Home() {
     }
     try {
       await addDoc(collection(db, "articles"), {
-        title: articleFormData.title,
-        description: articleFormData.description,
-        link: articleFormData.link,
+        ...articleFormData,
         timestamp: serverTimestamp(),
       });
       alert("Artículo añadido correctamente!");
@@ -136,41 +99,25 @@ function Home() {
     }
   };
 
-  // Close the form if clicked outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (formRef.current && !formRef.current.contains(e.target)) {
-        setShowAddArticleForm(false); // Close the form
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
+  // Handle deleting an article
   const handleDeleteArticle = async (articleId) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que deseas eliminar este artículo?"
-    );
-
-    if (isConfirmed) {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este artículo?")) {
       try {
-        // Reference to the article document in Firestore
-        const articleRef = doc(db, "articles", articleId);
-
-        // Delete the article from Firestore
-        await deleteDoc(articleRef);
-
-        // Optional: You can show an alert or update local state here to reflect the change
+        await deleteDoc(doc(db, "articles", articleId));
         alert("Artículo eliminado correctamente!");
       } catch (error) {
         console.error("Error deleting article:", error);
         alert("Hubo un error al eliminar el artículo.");
       }
     }
+  };
+
+  // Carousel responsive settings
+  const responsive = {
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
+    desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+    tablet: { breakpoint: { max: 1024, min: 600 }, items: 2 },
+    mobile: { breakpoint: { max: 600, min: 0 }, items: 1 },
   };
 
   return (
@@ -381,3 +328,36 @@ function Home() {
 }
 
 export default Home;
+
+// const articles = [
+//   {
+//     title: "Ansiedad: Lo que usted debe saber",
+//     description:
+//       "Las experiencias negativas en la infancia y la historia familiar tal vez aumenten el riesgo.",
+//     link: "https://magazine.medlineplus.gov/es/art%C3%ADculo/ansiedad-lo-que-usted-debe-saber/",
+//   },
+//   {
+//     title: "No dormir",
+//     description:
+//       "Los lectores escriben sobre los problemas que causa la falta de sueño.",
+//     link: "https://elpais.com/opinion/2025-02-09/no-dormir.html",
+//   },
+//   {
+//     title: "El silencio mata: suicidio entre los adolescentes",
+//     description:
+//       "Los expertos coinciden en que las conductas suicidas y las autolesiones no son el problema.",
+//     link: "https://elpais.com/sociedad/2025-02-02/el-silencio-mata-como-y-por-que-hablar-del-suicidio-entre-los-adolescentes.html",
+//   },
+//   {
+//     title: "Hay algo peor que sentir emociones oscuras: evitarlas",
+//     description:
+//       "Priorizamos los acontecimientos negativos por encima de los positivos, lo cual parece… negativo.",
+//     link: "https://elpais.com/eps/2025-01-16/hay-algo-peor-que-sentir-emociones-oscuras-evitarlas.html",
+//   },
+//   {
+//     title: "Los contenidos negativos en redes",
+//     description:
+//       "Un nuevo estudio concluye que lo que perjudica la salud mental no es tanto el uso de internet como el tipo de información.",
+//     link: "https://elpais.com/tecnologia/2024-12-17/los-contenidos-negativos-en-redes-afectan-mas-a-las-personas-con-peor-salud-mental.html",
+//   },
+// ];

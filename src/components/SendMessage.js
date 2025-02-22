@@ -18,13 +18,18 @@ const SendMessage = ({
   setEditMessageData,
   nickname,
 }) => {
-  const [message, setMessage] = useState(""); // State to store the message
-  const [showWarning, setShowWarning] = useState(false); // State to control the warning div
-  const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple submissions
-  const inputRef = useRef(null); // Create a ref to the input field
-  const [uid, setUid] = useState(null); // user uid
+  // User-related states
+  const [uid, setUid] = useState(null);
 
-  // Sensitive words list (in Spanish)
+  // Message-related states
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+
+  // Ref for input field
+  const inputRef = useRef(null);
+
+  // List of sensitive words
   const sensitiveWords = [
     "suicidio",
     "muerte",
@@ -48,15 +53,21 @@ const SendMessage = ({
     "cobarde",
     "cuchillo",
   ];
-  // If there is an edit message data, pre-fill the input field
+
+  // Autofocus on input when component mounts
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
+  // Load message in input when editing
   useEffect(() => {
     if (editMessageData) {
-      setMessage(editMessageData.text); // Set the message to be edited
-      inputRef.current?.focus(); // Focus on the input field after editing
+      setMessage(editMessageData.text);
+      inputRef.current?.focus();
     }
   }, [editMessageData]);
 
-  // Authentication state
+  // Listen for authentication state changes
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       setUid(user ? user.uid : null);
@@ -69,7 +80,7 @@ const SendMessage = ({
     const muteDocRef = doc(db, "mutedUsers", userId);
     const muteDoc = await getDoc(muteDocRef);
 
-    if (!muteDoc.exists()) return false; // Not muted
+    if (!muteDoc.exists()) return false;
 
     const { expiresAt } = muteDoc.data();
     const now = new Date();
@@ -82,72 +93,61 @@ const SendMessage = ({
     return true;
   };
 
-  // Autofocus on input
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
+  // Function to check if the message contains sensitive words
+  const containsSensitiveWords = (text) => {
+    const lowerCaseMessage = text.toLowerCase();
+    return sensitiveWords.some((word) => lowerCaseMessage.includes(word));
+  };
 
-  // Function to handle sending or updating the message
+  // Function to send or update a message
   const sendMessage = async (event) => {
-    event.preventDefault(); // Prevent form default submission behavior
+    event.preventDefault();
+    if (isSubmitting) return; // Prevent multiple submissions
+
+    if (!message.trim()) {
+      alert("Introduzca un mensaje válido.");
+      return;
+    }
+
     if (await isUserMuted(auth.currentUser.uid)) {
       alert("Estás temporalmente bloqueado. Por favor, espera (1 minuto).");
       return;
     }
 
-    if (isSubmitting) return; // Prevent multiple submissions
-
-    if (message.trim() === "") {
-      alert("Introduzca un mensaje válido.");
+    if (containsSensitiveWords(message)) {
+      setShowWarning(true);
       return;
     }
 
-    setIsSubmitting(true); // Disable further submissions
-
-    // Check if the message contains any sensitive words
-    const messageLowerCase = message.toLowerCase();
-    const containsSensitiveWords = sensitiveWords.some((word) =>
-      messageLowerCase.includes(word)
-    );
-
-    if (containsSensitiveWords) {
-      setShowWarning(true); // Show the warning div if sensitive words are found
-      setIsSubmitting(false); // Re-enable submission if warning is shown
-      return;
-    } else {
-      setShowWarning(false); // Hide the warning div if no sensitive words
-    }
-
+    setIsSubmitting(true);
     const { uid } = auth.currentUser;
 
     try {
       if (editMessageData) {
-        // If we are editing, update the existing message
+        // Updating an existing message
         const messageRef = doc(db, "messages", editMessageData.id);
         await updateDoc(messageRef, {
           text: message,
           updatedAt: serverTimestamp(),
         });
-
-        // Reset the edit state after updating the message
         setEditMessageData(null);
       } else {
-        // Otherwise, create a new message
+        // Sending a new message
         await addDoc(collection(db, "messages"), {
           text: message,
-          name: nickname, // Use the nickname here
-          createdAt: Timestamp.now(), // Temporary local timestamp
-          uid, // User ID
+          name: nickname,
+          createdAt: Timestamp.now(),
+          uid,
         });
       }
 
-      setMessage(""); // Clear the input field
-      scroll.current.scrollIntoView({ behavior: "smooth" }); // Scroll to latest message
+      setMessage("");
+      scroll.current.scrollIntoView({ behavior: "smooth" });
     } catch (error) {
       console.error("Error sending message:", error);
     }
 
-    setIsSubmitting(false); // Re-enable submission after sending
+    setIsSubmitting(false);
   };
 
   return (

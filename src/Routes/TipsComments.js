@@ -22,7 +22,7 @@ function Comments({ tip, onClose }) {
   const commentMenuRef = useRef(null);
   const scroll = useRef(null);
 
-  /** Fetch comments in real-time */
+  // Fetch comments in real-time
   useEffect(() => {
     const commentsQuery = query(
       collection(db, "comments"),
@@ -51,14 +51,14 @@ function Comments({ tip, onClose }) {
     };
   }, []);
 
-  /** Scroll to the latest comment */
+  // Scroll to the latest comment
   useEffect(() => {
     if (scroll.current) {
       scroll.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [comments]);
 
-  /** Close comments when clicking outside */
+  // Close comments when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -72,12 +72,12 @@ function Comments({ tip, onClose }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  /** Focus input field when comments open */
+  // Focus input field when comments open
   useEffect(() => {
     commentInputRef.current?.focus();
   }, []);
 
-  /** Handle sending comment */
+  // Handle sending comment
   const sendComment = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) {

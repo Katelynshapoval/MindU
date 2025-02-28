@@ -16,6 +16,7 @@ function Comments({ tip, onClose }) {
   const [comments, setComments] = useState([]); // Stores fetched comments
   const [newComment, setNewComment] = useState(""); // Stores input field value
   const [uid, setUid] = useState(null); // Stores user ID
+  const [loading, setLoading] = useState(false); // New state to prevent multiple submissions
 
   // Refs for UI interactions
   const commentInputRef = useRef(null);
@@ -80,10 +81,11 @@ function Comments({ tip, onClose }) {
   // Handle sending comment
   const sendComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim()) {
+    if (!newComment.trim() || loading) {
       alert("Ingrese un comentario válido.");
       return;
     }
+    setLoading(true); // Prevent multiple clicks
 
     try {
       await addDoc(collection(db, "comments"), {
@@ -97,6 +99,7 @@ function Comments({ tip, onClose }) {
     } catch (error) {
       console.error("Error al enviar el comentario:", error);
     }
+    setLoading(false); // Re-enable after submission
   };
 
   return (
@@ -136,6 +139,7 @@ function Comments({ tip, onClose }) {
             ref={commentInputRef}
             onChange={(e) => setNewComment(e.target.value)}
             value={newComment}
+            maxLength={300}
             placeholder="Escribe tu comentario..."
           />
           <button type="submit" id="sendComment">

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FaCircleArrowUp } from "react-icons/fa6";
 import "../css/assistant.css";
-import DOMPurify from "dompurify"; // Sanitize HTML, prevent from running scripts
 
 function Assistant() {
   // Message states
@@ -10,120 +9,111 @@ function Assistant() {
   const [previousChats, setPreviousChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
   const [chatInputs, setChatInputs] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Prevent multiple submissions
 
-  // Refs for scrolling and input autofocus
-  const scrollToEnd = useRef(null);
-  const sendMessageInputRef = useRef(null);
+  // Refs
+  const scrollToEnd = useRef(null); // Reference to scroll to the bottom of the chat feed
+  const sendMessageInputRef = useRef(null); // for autofocus
 
-  // Create a new chat session
   const createNewChat = () => {
     setMessage(null);
-    setValue("");
+    setValue(""); // Clear the input value
     setCurrentTitle(null);
   };
 
-  // Handle clicking on a previous chat title
   const handleClick = (uniqueTitle) => {
     setCurrentTitle(uniqueTitle);
+    // Set the input value to the previously stored value for the selected chat
     setValue(chatInputs[uniqueTitle] || "");
   };
 
-  // Fetch assistant response
   const getMessages = async () => {
-    if (isSubmitting || !value.trim()) {
+    if (isSubmitting) return; // Prevent multiple submissions
+    if (!value.trim()) {
       alert("Introduzca un mensaje válido.");
       return;
-    }
+    } // Prevent sending empty messages
 
-    setIsSubmitting(true);
+    setIsSubmitting(true); // Disable further submissions
+
+    const options = {
+      method: "POST",
+      body: JSON.stringify({
+        message: value,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
 
     try {
       const response = await fetch(
-        "https://us-central1-mindu-app-4f9f4.cloudfunctions.net/api/completions",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: value }),
-        }
+        "http://localhost:8000/completions",
+        options
       );
-
-      if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
-
       const data = await response.json();
 
-      if (!data.message) throw new Error("Invalid response structure");
+      // Handle new message
+      const newMessage = data.choices[0].message;
 
-      setMessage(data.message);
+      // Set the message and append it to the previous chats
+      setMessage(newMessage);
+
+      // Update previous chats
       setPreviousChats((prevChats) => [
         ...prevChats,
         { title: currentTitle || value, role: "user", content: value },
         {
           title: currentTitle || value,
-          role: "assistant",
-          content: data.message,
+          role: newMessage.role,
+          content: newMessage.content,
         },
       ]);
 
-      setValue("");
-      setCurrentTitle((prevTitle) => prevTitle || value);
+      // Save the chat input and clear the input field for the current session
+      setChatInputs((prevInputs) => ({
+        ...prevInputs,
+        [currentTitle || value]: "", // Store empty value after sending
+      }));
+
+      setCurrentTitle((prevTitle) => prevTitle || value); // Update the title
+
+      // Clear the value to reset the input
+      setValue(""); // Clear the input field after submitting the message
     } catch (error) {
-      console.error("Fetch error:", error);
-      alert("Hubo un problema con la respuesta del asistente.");
-    } finally {
-      setIsSubmitting(false);
+      console.error(error);
     }
+
+    setIsSubmitting(false); // Re-enable submission after sending
   };
 
-  // Log debugging information
   useEffect(() => {
+    // Debugging logs
     console.log("Current Title:", currentTitle);
     console.log("Value:", value);
     console.log("Message:", message);
     console.log("Previous Chats:", previousChats);
   }, [message, currentTitle]);
 
-  // Scroll to the latest message when messages update
   useEffect(() => {
+    // Scroll to the bottom of the chat feed whenever messages update
     if (scrollToEnd.current) {
       scrollToEnd.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [previousChats]);
+  }, [previousChats]); // Depend on previousChats state to trigger scrolling when a new message is added
 
-  // Autofocus input on mount
+  // Autofocus on input
   useEffect(() => {
     sendMessageInputRef.current.focus();
   }, []);
 
-  // Get the current chat history
   const currentChat = previousChats.filter(
     (previousChat) => previousChat.title === currentTitle
   );
 
-  // Get unique chat titles
   const uniqueTitles = Array.from(
     new Set(previousChats.map((previousChat) => previousChat.title))
   );
-
-  // Function to parse and render messages
-  const parseMessage = (messageContent) => {
-    // Convert **text** to bold
-    const boldText = messageContent.replace(
-      /\*\*(.*?)\*\*/g,
-      "<strong>$1</strong>"
-    );
-
-    // Convert URLs to clickable links
-    const linkifiedText = boldText.replace(
-      /(https?:\/\/[^\s]+)/g,
-      (url) =>
-        `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
-    );
-
-    // Sanitize HTML to prevent XSS attacks
-    return DOMPurify.sanitize(linkifiedText);
-  };
 
   return (
     <div className="assistant">
@@ -149,19 +139,9 @@ function Assistant() {
               <p className="role">
                 {chatMessage.role === "user" ? "Tú" : "Anima"}
               </p>
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: parseMessage(chatMessage.content),
-                }}
-              ></p>
+              <p>{chatMessage.content}</p>
             </li>
           ))}
-          {isSubmitting && (
-            <li className="loading-message">
-              <p className="role">Anima</p>
-              <p>Pensando...</p>
-            </li>
-          )}
           <div ref={scrollToEnd}></div> {/* The scroll reference */}
         </ul>
         <div className="bottom-section">

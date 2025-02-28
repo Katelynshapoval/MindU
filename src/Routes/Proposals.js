@@ -190,7 +190,11 @@ function Proposals() {
         ) : (
           <button
             id="showFormButtonProposals"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              uid
+                ? setShowForm(true)
+                : alert("Inicia sesión para enviar una sugerencia.");
+            }}
           >
             Enviar Sugerencia
           </button>

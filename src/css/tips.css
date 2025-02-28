@@ -366,20 +366,28 @@ body {
 
 .commentInput {
   position: relative;
-  width: 100%;
   padding: 10px;
 }
 
-.commentInput input {
-  width: 100%;
+.commentsContainer form {
   height: 52px;
   padding: 10px 25px;
   font-size: 16px;
   color: white;
-  background-color: #404d42;
+  background-color: #202b22;
   border: none;
   border-radius: 30px;
   outline: none;
+  margin: 10px;
+}
+
+.commentInput input {
+  width: 90%;
+  height: 100%;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: white;
 }
 
 #sendComment {

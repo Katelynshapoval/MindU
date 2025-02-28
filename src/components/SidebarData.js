@@ -25,7 +25,7 @@ export const SidebarData = [
   },
 
   {
-    title: "Asistante IA",
+    title: "Asistente IA",
     path: "/assistant",
     icon: <RiRobot3Fill />,
     cName: "nav-text",
